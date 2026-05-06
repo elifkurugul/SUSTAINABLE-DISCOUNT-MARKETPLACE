@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Discount Marketplace</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+    <div class="register-container">
+        <h2>Create an Account</h2>
+
+        <% if (message) { %>
+            <div class="alert">
+                <%= message %>
+            </div>
+            <% } %>
+
+                <form action="/register" method="POST">
+                    <div class="form-group">
+                        <label for="type">User Type:</label>
+                        <select name="type" id="type" required>
+                            <option value="consumer" <%=formData.type==='consumer' ? 'selected' : '' %>>Consumer
+                            </option>
+                            <option value="market" <%=formData.type==='market' ? 'selected' : '' %>>Market</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="name">Full Name:</label>
+                        <input type="text" name="name" placeholder="Enter name" value="<%= formData.name ?? '' %>">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email Address:</label>
+                        <input type="email" name="email" placeholder="...@mail.com" value="<%= formData.email ?? '' %>">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password:</label>
+                        <input type="password" name="password" placeholder="********">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="city">City:</label>
+                        <input type="text" name="city" placeholder="Ankara" value="<%= formData.city ?? '' %>">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="district">District:</label>
+                        <input type="text" name="district" placeholder="Bilkent" value="<%= formData.district ?? '' %>">
+                    </div>
+
+                    <button type="submit" class="btn-register">Register</button>
+                </form>
+                <p>Already have an account? <a href="/">Login here</a></p>
+    </div>
+</body>
+
+</html>
