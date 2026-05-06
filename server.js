@@ -26,7 +26,7 @@ app.get("/", async (req, res) => {
 })
 
 app.get("/register", (req, res) => {
-    res.render("register")
+    res.render("register", { message: "", formData: {} })
 })
 
 app.post("/register", async (req, res) => {
@@ -40,11 +40,11 @@ app.post("/register", async (req, res) => {
         req.session.message = "Registration successful. Please login."
         res.redirect("/login")
     } catch(err) {
-        console.error(err);
+        let errorMessage = "Database error"
         if (err.code === 'ER_DUP_ENTRY') {
-            return res.status(400).send("Enter another email.");
+            errorMessage = "Enter another email."
         }
-        res.status(500).send("Database error")
+        res.render("/register", { message: errorMessage, formData: req.body })
     }
 })
 
