@@ -1,5 +1,5 @@
 import express from "express"
-import { db } from "./db.js"
+import db from "./db.js"
 import bcrypt from "bcrypt"
 import "dotenv/config"
 import session from "express-session"
@@ -21,7 +21,7 @@ app.get("/", async (req, res) => {
     if (req.session.isAuthenticated) {
         return res.redirect("/main")
     }
-    res.render("login", { message: req.session.message })
+    res.render("index", { message: req.session.message })
     req.session.message = null
 })
 
@@ -38,7 +38,7 @@ app.post("/register", async (req, res) => {
             [email, name, hashedPassword, city, district, type]
         )
         req.session.message = "Registration successful. Please login."
-        res.redirect("/")
+        res.redirect("/login")
     } catch(err) {
         console.error(err);
         if (err.code === 'ER_DUP_ENTRY') {
@@ -46,6 +46,15 @@ app.post("/register", async (req, res) => {
         }
         res.status(500).send("Database error")
     }
+})
+
+app.get("/login", (req, res) => {
+    if (req.session.isAuthenticated) {
+        return res.redirect("/auth")
+    }
+    const message = req.session.message
+    req.session.message = null
+    res.render("login", { message })
 })
 
 app.post("/login", async (req,res)=>{
@@ -62,14 +71,14 @@ app.post("/login", async (req,res)=>{
             if (remember) {
                 req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000 // 30 days
             }
-            return res.redirect("/main")
+            return res.redirect("/auth")
         } else {
             req.session.message = "Invalid email or password"
-            return res.redirect("/")
+            return res.redirect("/login")
         }
       } else {
         req.session.message = "Invalid email or password"
-        return res.redirect("/")
+        return res.redirect("/login")
       }
     } catch(err) {
         res.status(500).send("Error")
@@ -80,10 +89,10 @@ function requireAuth(req, res, next) {
     if (req.session.isAuthenticated) {
         return next()
     }
-    res.redirect("/")
+    res.redirect("/login")
 }
 
-app.get("/main", requireAuth, async (req, res) => {
+app.get("/auth", requireAuth, async (req, res) => {
     const user = req.session.user
 
     if (user.type === "market") {
@@ -99,5 +108,5 @@ app.get("/logout", requireAuth, (req, res) => {
 })
 
 app.listen(port, () => {
-    console.log("Server is running on port 3000")
+    console.log(`Server is running on port ${port}.`)
 })
