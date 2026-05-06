@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Log in Page</h1>
+
+    <div>
+         <!-- Hata Mesajı  -->
+                    <% if (typeof error !== 'undefined' && error) { %>
+                        <div class="alert alert-danger">
+                            <%= error %>
+                        </div>
+                    <% } %>
+          
+        <form action="/login" method="POST">
+      <div>
+          <!--Email -->
+        <label for="email" >E-Mail Address</label>
+        <input type="email"
+               name="email" 
+               id="email" 
+               value="<%= typeof email!=='undefined' ? email: '' %>">
+      </div>
+       <!-- Şifre-->
+      <div>
+       <label for="password">Password:</label>
+       <input type="password"
+            name="password"
+            id="password">
+      </div>
+
+      <div>
+        <button type="submit">Log In</button>
+      </div>
+    </form>
+    </div>
+   
+
+       <div>
+        <p>Don't have an account? <a href="/register">Create one.</a></p>
+      </div>
+    
+   
+
+</body>
+</html>
