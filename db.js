@@ -3,7 +3,7 @@ const db = mysql.createPool({
     host: 'localhost',  
     user: 'std',
     password: 'std',
-    database: 'test',
+    database: 'discount_marketplace',
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0

@@ -3,6 +3,7 @@ import db from "./db.js"
 import bcrypt from "bcrypt"
 import "dotenv/config"
 import session from "express-session"
+import cartRouter from "./routes/cart.js"
 
 const port = process.env.PORT
 
@@ -16,6 +17,9 @@ app.use(session({
     resave: false, 
     saveUninitialized: false
 }))
+
+app.use(express.json())
+app.use("/api/cart", cartRouter)
 
 app.get("/", async (req, res) => {
     if (req.session.isAuthenticated) {
@@ -44,7 +48,7 @@ app.post("/register", async (req, res) => {
         if (err.code === 'ER_DUP_ENTRY') {
             errorMessage = "Enter another email."
         }
-        res.render("/register", { message: errorMessage, formData: req.body })
+        res.render("register", { message: errorMessage, formData: req.body })
     }
 })
 
@@ -57,7 +61,7 @@ app.get("/login", (req, res) => {
     res.render("login", { message })
 })
 
-app.post("/login", async (req,res)=>{
+app.post("/login", async (req,res) => {
     // REMEMBER ME YAZ EJS'E
     const { email, password, remember } = req.body;
     try {
@@ -85,22 +89,12 @@ app.post("/login", async (req,res)=>{
     }
 })
 
-function requireAuth(req, res, next) {
+export function requireAuth(req, res, next) {
     if (req.session.isAuthenticated) {
         return next()
     }
     res.redirect("/login")
 }
-
-app.get("/auth", requireAuth, async (req, res) => {
-    const user = req.session.user
-
-    if (user.type === "market") {
-        res.render("market-page", { user })
-    } else if (user.type === "consumer") {
-        res.render("consumer-page", { user })
-    }
-})
 
 app.get("/search", requireAuth, async (req, res) => {
     // req.body --> for data sent in the hidden part of a POST request
@@ -155,6 +149,79 @@ app.get("/search", requireAuth, async (req, res) => {
         res.status(500).send("Error performing search operation.")
     }
 })
+
+//MARKET USER D
+app.get("/auth", requireAuth, async (req, res) => {
+    const user = req.session.user
+
+    if (user.type === "market") {
+        try {
+            const [products] = await db.query("SELECT * FROM products WHERE market_id = ?", [user.id])
+            res.render("market-page", { user, products })
+        } catch(err) {
+            res.status(500).send("Database error while fetching products.")
+        }
+    } else if (user.type === "consumer") {
+        res.render("consumer-page", { user })
+    }
+})
+
+app.post("/market/update-profile", requireAuth, async (req, res) => {
+    const { name, city, district } = req.body;
+    const userId = req.session.user.id;
+    try {
+        await db.query("UPDATE users SET name = ?, city = ?, district = ? WHERE id = ?", [name, city, district, userId]);
+        req.session.user.name = name;
+        req.session.user.city = city;
+        req.session.user.district = district;
+        res.redirect("/auth");
+    } catch(err) {
+        res.status(500).send("Error updating profile.");
+    }
+});
+
+
+app.post("/market/add-product", requireAuth, async (req, res) => {
+    const { title, stock, normal_price, discounted_price, expiration_date, image } = req.body;
+    const market_id = req.session.user.id;
+    try {
+        await db.query(
+            "INSERT INTO products (market_id, title, stock, normal_price, discounted_price, expiration_date, image) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            [market_id, title, stock, normal_price, discounted_price, expiration_date, image]
+        );
+        res.redirect("/auth");
+    } catch(err) {
+        res.status(500).send("Error adding product.");
+    }
+});
+
+
+app.post("/market/delete-product/:id", requireAuth, async (req, res) => {
+    const productId = req.params.id;
+    const marketId = req.session.user.id;
+    try {
+        await db.query("DELETE FROM products WHERE id = ? AND market_id = ?", [productId, marketId]);
+        res.redirect("/auth");
+    } catch(err) {
+        res.status(500).send("Error deleting product.");
+    }
+});
+
+
+app.post("/market/edit-product/:id", requireAuth, async (req, res) => {
+    const productId = req.params.id;
+    const marketId = req.session.user.id;
+    const { title, stock, normal_price, discounted_price, expiration_date, image } = req.body;
+    try {
+        await db.query(
+            "UPDATE products SET title = ?, stock = ?, normal_price = ?, discounted_price = ?, expiration_date = ?, image = ? WHERE id = ? AND market_id = ?",
+            [title, stock, normal_price, discounted_price, expiration_date, image, productId, marketId]
+        );
+        res.redirect("/auth");
+    } catch(err) {
+        res.status(500).send("Error updating product.");
+    }
+}); //D
 
 app.get("/logout", requireAuth, (req, res) => {
     req.session.destroy()

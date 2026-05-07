@@ -6,12 +6,22 @@
     <title>Consumer</title>
 </head>
 <body>
-    <form action="/search" method="GET" class="search">
-        <input type="text" name="keyword" 
-         value="<%= typeof (keyword) !== 'undefined' ? keyword : '' %>"
-         placeholder="Type to search for products...">
-        <button type="submit">Search</button>
-    </form>
+    <div>
+        <form action="/search" method="GET" class="search">
+            <input type="text" name="keyword"
+             value="<%= typeof (keyword) !== 'undefined' ? keyword : '' %>"
+             placeholder="Type to search for products...">
+            <button type="submit">Search</button>
+        </form>
+
+        <div class="cart-link">
+            <a href="/api/cart">Cart</a>
+        </div>
+
+        <div class="consumer-profile-link">
+            <a href="">Profile</a>
+        </div>
+    </div>
 
     <% if (typeof (products) !== 'undefined') { %>
         <% if (products.length > 0) { %>

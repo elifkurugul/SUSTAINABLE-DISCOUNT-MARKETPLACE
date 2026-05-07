@@ -6,6 +6,97 @@
     <title>Shopping Cart</title>
 </head>
 <body>
-    
+    <h1>Shopping Cart for <%= user.name %></h1>
+    <div id="cart-container">
+        <% if (items.length > 0) { %>
+            <div id="items-list">
+                <% items.forEach(i => { %>
+                    <div id="item-row-<%= i.id %>">
+                        <p>Title: <%= i.title %></p>
+                        <p>Price: ₺<%= i.discounted_price %></p>
+                        
+                        <label>Quantity:</label>
+                        <input
+                            type="number"
+                            value="<%= i.quantity %>"
+                            min="1"
+                            class="qty-input"
+                            data-cart-id="<%= i.id %>"
+                        >
+                        
+                        <button class="remove-btn" data-cart-id="<%= i.id %>">Remove</button>
+                        <hr>
+                    </div>
+                <% }) %>
+            </div>
+            
+            <h2 id="grand-total">Total: ₺<%= totalPrice.toFixed(2) %></h2>
+            <button id="purchase-btn">Purchase</button>
+        <% } else { %>
+            <p>Your cart is empty.</p>
+        <% } %>
+    </div>
+
+    <script>
+        // quantity update
+        document.querySelectorAll('.qty-input').forEach(input => {
+            input.addEventListener('change', async function () {
+                const cartId = this.dataset.cartId
+                const newQuantity = this.value
+
+                const response = await fetch('/cart/update', {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ cartId, newQuantity })
+                })
+                const data = await response.json()
+
+                if (data.success) {
+                    document.getElementById('grand-total').innerText = `Total: ₺${data.total}`
+                } else {
+                    alert("Error updating quantity.")
+                }
+            })
+        })
+
+        // remove item
+        document.querySelectorAll('.remove-btn').forEach(btn => {
+            btn.addEventListener('click', async function () {
+                const cartId = this.dataset.cartId
+
+                const response = await fetch(`/cart/remove/${cartId}`, {
+                    method: 'DELETE'
+                })
+                const data = await response.json()
+
+                if (data.success) {
+                    document.getElementById(`item-row-${cartId}`).remove()
+                    document.getElementById('grand-total').innerText = `Total: ₺${data.total}`
+
+                    if (parseFloat(data.total) <= 0) {
+                        document.getElementById('cart-container').innerHTML = "<p>Your cart is empty.</p>"
+                    }
+                } else {
+                    alert("Error removing item.")
+                }
+            })
+        })
+
+        // purchase item
+        const purchaseBtn = document.getElementById('purchase-btn')
+        if (purchaseBtn) {
+            purchaseBtn.addEventListener('click', async function () {
+                const response = await fetch('/cart/purchase', { method: 'POST' })
+                const data = await response.json()
+
+                if (data.success) {
+                    alert("Purchase successful! Products have been removed.")
+                    document.getElementById('cart-container').innerHTML = "<p>Your cart is empty.</p>"
+                } else {
+                    alert("Error processing purchase.")
+                }
+            })
+        }
+    </script>
 </body>
 </html>
