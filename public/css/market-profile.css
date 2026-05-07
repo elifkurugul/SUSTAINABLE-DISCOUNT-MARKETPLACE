@@ -1,0 +1,156 @@
+/* market-profile.css — market-profile.ejs */
+:root {
+  --pink-lightest: #fff0f5;
+  --pink-light:    #ffd6e7;
+  --pink-main:     #f78fb3;
+  --pink-deep:     #d63384;
+  --bg:            #fff7f9;
+  --surface:       #ffffff;
+  --text:          #5c3347;
+  --text-muted:    #a07080;
+  --border:        #f0c0d0;
+  --radius:        12px;
+  --shadow:        0 2px 12px rgba(215,100,140,0.10);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  font-family: 'Segoe UI', sans-serif;
+  color: var(--text);
+}
+
+/* Nav */
+header {
+  background: var(--pink-light);
+  border-bottom: 1px solid var(--border);
+  padding: 0 2rem;
+}
+nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+}
+nav h1 { font-size: 1.1rem; color: var(--pink-deep); }
+nav ul { list-style: none; display: flex; gap: 1.25rem; }
+nav ul li a { color: var(--text); font-size: 0.9rem; font-weight: 500; text-decoration: none; }
+nav ul li a:hover { color: var(--pink-deep); }
+
+/* Sections */
+section {
+  max-width: 860px;
+  margin: 1.75rem auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.75rem;
+  box-shadow: var(--shadow);
+}
+
+section h2 {
+  color: var(--pink-deep);
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+hr { display: none; }
+
+/* Forms */
+label, form p {
+  font-size: 0.83rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+form p { margin-bottom: 0.7rem; }
+
+input[type="text"],
+input[type="number"],
+input[type="date"] {
+  width: 100%;
+  padding: 0.5rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--pink-lightest);
+  color: var(--text);
+  font-size: 0.92rem;
+  margin-top: 3px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--pink-main);
+  box-shadow: 0 0 0 3px rgba(247,143,179,0.18);
+}
+
+/* Primary buttons */
+form:not([action*="delete"]) button[type="submit"] {
+  background: var(--pink-main);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1.3rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: background 0.2s;
+}
+form:not([action*="delete"]) button[type="submit"]:hover { background: var(--pink-deep); }
+
+/* Delete button */
+form[action*="delete"] button {
+  background: #fff;
+  color: #c0405a;
+  border: 1px solid #f0b0bc;
+  border-radius: 8px;
+  padding: 0.4rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+form[action*="delete"] button:hover { background: #ffeef2; }
+
+/* Product cards */
+section > div {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+section > div > div {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+img { width: 100%; height: 140px; object-fit: cover; border-radius: 8px; background: var(--pink-lightest); }
+
+/* Expired */
+strong[style*="color: red"] {
+  color: #c0405a !important;
+  font-size: 0.78rem;
+  background: #ffeef2;
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+
+section > p { color: var(--text-muted); font-size: 0.92rem; }
+
+@media (max-width: 600px) {
+  section { margin: 1rem; padding: 1.25rem 1rem; }
+  nav { flex-direction: column; height: auto; padding: 0.6rem 0; gap: 0.4rem; }
+  nav ul { flex-wrap: wrap; justify-content: center; gap: 0.6rem; }
+}

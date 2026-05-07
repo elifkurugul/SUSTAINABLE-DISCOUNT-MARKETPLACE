@@ -1,0 +1,110 @@
+/* verify.css — verify.ejs */
+:root {
+  --pink-lightest: #fff0f5;
+  --pink-main:     #f78fb3;
+  --pink-deep:     #d63384;
+  --bg:            #fff7f9;
+  --surface:       #ffffff;
+  --text:          #5c3347;
+  --text-muted:    #a07080;
+  --border:        #f0c0d0;
+  --radius:        14px;
+  --shadow:        0 4px 24px rgba(215,100,140,0.13);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  font-family: 'Segoe UI', sans-serif;
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.verify-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 2.5rem 2rem;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: var(--shadow);
+  text-align: center;
+}
+
+.icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.75rem;
+  color: var(--pink-main);
+}
+
+h2 {
+  font-size: 1.35rem;
+  color: var(--pink-deep);
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  margin-bottom: 1.25rem;
+  line-height: 1.55;
+}
+
+.alert {
+  background: #ffeef2;
+  border: 1px solid #f0b0bc;
+  color: #a0304a;
+  border-radius: 8px;
+  padding: 0.6rem 1rem;
+  font-size: 0.87rem;
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+input[type="text"] {
+  width: 100%;
+  padding: 0.65rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--pink-lightest);
+  color: var(--text);
+  font-size: 1.1rem;
+  letter-spacing: 0.3rem;
+  text-align: center;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  margin-bottom: 0.85rem;
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--pink-main);
+  box-shadow: 0 0 0 3px rgba(247,143,179,0.18);
+}
+
+button[type="submit"] {
+  width: 100%;
+  background: var(--pink-main);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.65rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+button[type="submit"]:hover { background: var(--pink-deep); }
+
+.back-link {
+  display: inline-block;
+  margin-top: 1.25rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-decoration: none;
+}
+.back-link:hover { color: var(--pink-deep); }

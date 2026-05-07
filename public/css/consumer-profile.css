@@ -1,0 +1,79 @@
+/* consumer-profile.css — consumer-profile.ejs */
+:root {
+  --pink-lightest: #fff0f5;
+  --pink-main:     #f78fb3;
+  --pink-deep:     #d63384;
+  --bg:            #fff7f9;
+  --surface:       #ffffff;
+  --text:          #5c3347;
+  --text-muted:    #a07080;
+  --border:        #f0c0d0;
+  --radius:        12px;
+  --shadow:        0 2px 12px rgba(215,100,140,0.10);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  font-family: 'Segoe UI', sans-serif;
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+
+form {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 2rem;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: var(--shadow);
+}
+
+form div { margin-bottom: 0.85rem; }
+
+label {
+  display: block;
+  font-size: 0.83rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+input[type="text"],
+input[type="password"] {
+  width: 100%;
+  padding: 0.5rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--pink-lightest);
+  color: var(--text);
+  font-size: 0.92rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--pink-main);
+  box-shadow: 0 0 0 3px rgba(247,143,179,0.18);
+}
+
+button[type="submit"] {
+  width: 100%;
+  background: var(--pink-main);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: background 0.2s;
+}
+button[type="submit"]:hover { background: var(--pink-deep); }

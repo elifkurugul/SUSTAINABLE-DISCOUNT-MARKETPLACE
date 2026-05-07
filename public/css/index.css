@@ -1,0 +1,109 @@
+:root {
+  --pink-lightest: #fff0f5;
+  --pink-main:     #f78fb3;
+  --pink-deep:     #d63384;
+  --bg:            #fff7f9;
+  --surface:       #ffffff;
+  --text:          #5c3347;
+  --text-muted:    #a07080;
+  --border:        #f0c0d0;
+  --radius:        16px;
+  --shadow:        0 4px 24px rgba(215,100,140,0.13);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  font-family: 'Segoe UI', sans-serif;
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Flash message */
+.alert {
+  position: fixed;
+  top: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #ffeef2;
+  border: 1px solid #f0b0bc;
+  color: #a0304a;
+  border-radius: 8px;
+  padding: 0.6rem 1.4rem;
+  font-size: 0.88rem;
+  white-space: nowrap;
+  box-shadow: 0 2px 10px rgba(200,80,120,0.12);
+}
+
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.5rem;
+}
+
+/* Logo frame */
+.logo-box {
+  border: 2.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 2.5rem 4rem;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  text-align: center;
+}
+
+.logo-text {
+  font-size: 2.4rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+}
+
+.logo-text .d { font-weight: 900; color: #f78fb3; }
+.logo-text .z { font-weight: 900; color: #b5a4d6; }
+.logo-text .e { font-weight: 900; color: #f4a7b9; }
+
+/* Buttons */
+.auth-buttons {
+  display: flex;
+  gap: 1.25rem;
+}
+
+.btn-login,
+.btn-register {
+  display: inline-block;
+  padding: 0.85rem 3rem;
+  border-radius: 10px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.btn-login {
+  background: var(--surface);
+  color: var(--pink-deep);
+  border: 2px solid var(--pink-main);
+}
+.btn-login:hover { background: var(--pink-lightest); text-decoration: none; }
+
+.btn-register {
+  background: var(--pink-main);
+  color: #fff;
+  border: 2px solid var(--pink-main);
+}
+.btn-register:hover { background: var(--pink-deep); border-color: var(--pink-deep); text-decoration: none; }
+
+.btn-login:active, .btn-register:active { transform: scale(0.97); }
+
+@media (max-width: 480px) {
+  .logo-box { padding: 2rem 1.75rem; }
+  .logo-text { font-size: 1.7rem; }
+  .auth-buttons { flex-direction: column; width: 100%; }
+  .btn-login, .btn-register { text-align: center; padding: 0.8rem 0; }
+}

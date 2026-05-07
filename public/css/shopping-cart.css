@@ -1,0 +1,115 @@
+/* shopping-cart.css — shopping-cart.ejs */
+:root {
+  --pink-lightest: #fff0f5;
+  --pink-main:     #f78fb3;
+  --pink-deep:     #d63384;
+  --bg:            #fff7f9;
+  --surface:       #ffffff;
+  --text:          #5c3347;
+  --text-muted:    #a07080;
+  --border:        #f0c0d0;
+  --radius:        12px;
+  --shadow:        0 2px 12px rgba(215,100,140,0.10);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  font-family: 'Segoe UI', sans-serif;
+  color: var(--text);
+  padding: 2rem 1rem;
+}
+
+h1 {
+  text-align: center;
+  color: var(--pink-deep);
+  font-size: 1.4rem;
+  margin-bottom: 1.5rem;
+}
+
+#cart-container {
+  max-width: 600px;
+  margin: 0 auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.75rem;
+  box-shadow: var(--shadow);
+}
+
+#cart-container > p {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+/* Item rows */
+#items-list > div {
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+}
+#items-list > div:last-child { border-bottom: none; }
+
+#items-list p { font-size: 0.9rem; color: var(--text-muted); flex: 1 0 100%; }
+#items-list p:first-child { font-weight: 600; color: var(--text); font-size: 0.95rem; }
+
+label {
+  font-size: 0.83rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.qty-input {
+  width: 68px;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--pink-lightest);
+  color: var(--text);
+  font-size: 0.9rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.qty-input:focus {
+  outline: none;
+  border-color: var(--pink-main);
+  box-shadow: 0 0 0 3px rgba(247,143,179,0.18);
+}
+
+.remove-btn {
+  background: #fff;
+  color: #c0405a;
+  border: 1px solid #f0b0bc;
+  border-radius: 8px;
+  padding: 0.38rem 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.remove-btn:hover { background: #ffeef2; }
+
+#grand-total {
+  font-size: 1.15rem;
+  color: var(--pink-deep);
+  font-weight: 700;
+  margin: 1.25rem 0 0.75rem;
+}
+
+#purchase-btn {
+  width: 100%;
+  background: var(--pink-main);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+#purchase-btn:hover { background: var(--pink-deep); }

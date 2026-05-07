@@ -303,6 +303,7 @@ app.post("/consumer/update-profile", requireAuth, async (req,res)=>{
         req.session.user.name = name;
         req.session.user.city = city;
         req.session.user.district = district;
+        req.session.message = "Profile updated successfully."
         res.redirect("/profile");
     }catch(err){
         console.error(err);

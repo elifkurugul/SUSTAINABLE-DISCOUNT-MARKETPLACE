@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Market Profile</title>
+    <link rel="stylesheet" href="/css/market-profile.ejs">
 </head>
 <body>
     <header>
@@ -29,7 +30,6 @@
           <div>
              <p>Market Name:<input type="text" name="name" value="<%= market.name %>" ></p>
                 <p>Email: <input type="text" name="email" value="<%= market.email%>" ></p>
-                <p>Phone:<input type="text" name="phone" value="<%= market.phone %>" ></p>
                 <p>Address:<input type="text" name="city" value="<%= market.city %>" ></p>
                 <p>District:<input type="text" name="district" value="<%= market.district %>" ></p>
             <button type="submit">Update Info</button>

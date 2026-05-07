@@ -3,9 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Consumer Profile</title>
+    <link rel="stylesheet" href="/css/consumer-profile.css">
 </head>
 <body>
+
+    <% if (typeof message !== 'undefined' && message) { %>
+           <p style="color: green;"><%= message %></p>
+    <% } %>
+
     <form action="/consumer/update-profile" method="POST">
         <div>
             <label>Name Surnam:</label>
@@ -13,13 +19,18 @@
         </div>
         <div>
             <label>City:</label>
+            <input type="text" name="city" value="<%= consumer.city %>">
+        </div>
+         <div>
+            <label>District:</label>
             <input type="text" name="district" value="<%= consumer.district %>">
         </div>
         <div>
             <label>New Password:(If you don't want to change it, leave it empty)</label>
             <input type="password" name="password">
         </div>
-        <button type="submit">Display Profile</button>
+        <button type="submit">Update Profile</button>
+
     </form>
 </body>
 </html>

@@ -1,0 +1,146 @@
+/* consumer-page.css — consumer-page.ejs */
+:root {
+  --pink-lightest: #fff0f5;
+  --pink-light:    #ffd6e7;
+  --pink-main:     #f78fb3;
+  --pink-deep:     #d63384;
+  --bg:            #fff7f9;
+  --surface:       #ffffff;
+  --text:          #5c3347;
+  --text-muted:    #a07080;
+  --border:        #f0c0d0;
+  --radius:        12px;
+  --shadow:        0 2px 12px rgba(215,100,140,0.10);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  font-family: 'Segoe UI', sans-serif;
+  color: var(--text);
+  padding: 1.5rem;
+}
+
+/* Top bar */
+body > div:first-child {
+  max-width: 860px;
+  margin: 0 auto 1.5rem;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+/* Search form */
+.search {
+  display: flex;
+  flex: 1;
+  gap: 0.5rem;
+  min-width: 220px;
+}
+
+.search input {
+  flex: 1;
+  padding: 0.5rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--pink-lightest);
+  color: var(--text);
+  font-size: 0.92rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.search input:focus {
+  outline: none;
+  border-color: var(--pink-main);
+  box-shadow: 0 0 0 3px rgba(247,143,179,0.18);
+}
+
+.search button {
+  background: var(--pink-main);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1.1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.search button:hover { background: var(--pink-deep); }
+
+.cart-link a,
+.consumer-profile-link a {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--pink-deep);
+  border-radius: 8px;
+  padding: 0.45rem 1rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.cart-link a:hover,
+.consumer-profile-link a:hover { background: var(--pink-lightest); }
+
+/* Product grid */
+.results {
+  max-width: 860px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.results > div {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.results > div p { font-size: 0.88rem; color: var(--text-muted); }
+.results > div p b { color: var(--pink-deep); }
+
+/* No products */
+body > p {
+  text-align: center;
+  color: var(--text-muted);
+  margin-top: 2rem;
+  font-size: 0.95rem;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin: 1.5rem auto;
+  max-width: 860px;
+}
+
+.pagination a,
+.pagination div,
+.pagination strong {
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.88rem;
+  color: var(--text);
+  background: var(--surface);
+  text-decoration: none;
+}
+
+.pagination strong {
+  background: var(--pink-main);
+  color: #fff;
+  border-color: var(--pink-main);
+}
+.pagination a:hover { background: var(--pink-lightest); }
