@@ -1,4 +1,4 @@
-const nodemailer = require("nodemailer")
+import nodemailer from "nodemailer"
 
 const transporter = nodemailer.createTransport({
     service: "gmail",
@@ -10,7 +10,7 @@ const transporter = nodemailer.createTransport({
 
 export async function sendVerificationEmail(email, code) {
     await transporter.sendMail({
-        from: "Do Not Reply - Sustainable Marketplace",
+        from: `"do not reply - Sustainable Marketplace <${process.env.EMAIL_USER}>"`,
         to: email,
         subject: "Your Verification Code",
         text: `Hello! Your verification code to create an account is ${code}.`

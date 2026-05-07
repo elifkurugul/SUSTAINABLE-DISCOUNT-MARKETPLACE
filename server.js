@@ -88,13 +88,21 @@ app.get("/login", (req, res) => {
         return res.redirect("/auth")
     }
     const message = req.session.message
+    const oldEmail = req.session.oldEmail || ""
     req.session.message = null
-    res.render("login", { message })
+    req.session.oldEmail = null
+    res.render("login", { message, oldEmail })
 })
 
 app.post("/login", async (req,res)=>{
     // REMEMBER ME YAZ EJS'E
     const { email, password, remember } = req.body;
+
+    if (!email || !password) {
+        req.session.message = "Please fill in all fields.";
+        req.session.oldEmail = email; 
+        return res.redirect("/login");
+    }
     try {
       const [rows] = await db.query("SELECT * FROM users WHERE email= ?", [email])
       if (rows.length > 0) {
@@ -252,7 +260,6 @@ app.post("/market/delete-product/:id", requireAuth, async (req, res) => {
     }
 });
 
-
 app.post("/market/edit-product/:id", requireAuth, async (req, res) => {
     const productId = req.params.id;
     const marketId = req.session.user.id;
@@ -267,6 +274,34 @@ app.post("/market/edit-product/:id", requireAuth, async (req, res) => {
         res.status(500).send("Error updating product.");
     }
 }); //D
+
+app.post("/consumer/update-profile", requireAuth, async (req,res)=>{
+    const { name, city, district, password } = req.body;
+    const userId = req.session.user.id;
+
+    try {
+        if (password && password.trim() !== "") {
+            const hashedPassword = await bcrypt.hash(password, 10);
+            await db.query(
+                "UPDATE users SET name = ?, city = ?, district = ?, password = ? WHERE id = ?",
+                [name, city, district, hashedPassword, userId]
+            );
+        } else {
+            await db.query(
+                "UPDATE users SET name = ?, city = ?, district = ? WHERE id = ?",
+                [name, city, district, userId]
+            );
+        }
+
+        req.session.user.name = name;
+        req.session.user.city = city;
+        req.session.user.district = district;
+        res.redirect("/profile");
+    }catch(err){
+        console.error(err);
+        res.status(500).send("Some error happened updating profile")
+    }
+})
 
 app.get("/logout", requireAuth, (req, res) => {
     req.session.destroy()
