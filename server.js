@@ -61,30 +61,34 @@ app.get("/login", (req, res) => {
     res.render("login", { message })
 })
 
-app.post("/login", async (req, res) => {
+app.post("/login", async (req,res)=>{
     // REMEMBER ME YAZ EJS'E
     const { email, password, remember } = req.body;
     try {
-        const [rows] = await db.query("SELECT * FROM users WHERE email= ?", [email])
-        if (rows.length > 0) {
-            const user = rows[0]
-            const match = await bcrypt.compare(password, user.password)
-            if (match) {
-                req.session.user = user
-                req.session.isAuthenticated = true
-                if (remember) {
-                    req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000 // 30 days
-                }
-                return res.redirect("/auth")
-            } else {
-                req.session.message = "Invalid email or password"
-                return res.redirect("/login")
+      const [rows] = await db.query("SELECT * FROM users WHERE email= ?", [email])
+      if (rows.length > 0) {
+        const user = rows[0]
+        const match = await bcrypt.compare(password, user.password)
+        if (match) {
+            req.session.user = user
+            req.session.isAuthenticated = true
+            req.session.userId=user.id;
+            req.session.userType=user.type;
+
+            if (remember) {
+                req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000 // 30 days
             }
+            return res.redirect("/auth");
         } else {
             req.session.message = "Invalid email or password"
+            req.session.oldEmail = email; // Sticky form için e-postayı hatırla
             return res.redirect("/login")
         }
-    } catch (err) {
+      } else {
+        req.session.message = "Invalid email or password"
+        return res.redirect("/login")
+      }
+    } catch(err) {
         res.status(500).send("Error")
     }
 })
@@ -236,6 +240,48 @@ app.post("/market/edit-product/:id", requireAuth, async (req, res) => {
 app.get("/logout", requireAuth, (req, res) => {
     req.session.destroy()
     res.redirect("/")
+})
+
+app.get("/profile", async (req,res)=>{
+
+   if(!req.session.userId){
+       return res.redirect("/login");
+    }
+    try{
+          const userId=req.session.userId;
+          const userType=req.session.userType;
+
+        const [rows]= await db.query(`SELECT * FROM users WHERE id=? AND type= ?`,
+                [ userId, userType]);
+
+        if(rows.length===0){
+            return res.redirect('/login');
+        }
+        const userData=rows[0];
+
+        if (userData.type === "market") {
+
+            const [products] = await db.query(
+                "SELECT * FROM products WHERE market_id = ?",
+                [userId]
+            );
+
+            return res.render("market-profile", {
+                market: userData,
+                products: products
+            });
+
+        } else {
+            return res.render("consumer-profile", {
+                consumer: userData
+            });
+        }
+
+    }catch(err){
+        console.error(err);
+        res.status(500).send("Server error");
+    }
+  
 })
 
 app.listen(port, () => {
