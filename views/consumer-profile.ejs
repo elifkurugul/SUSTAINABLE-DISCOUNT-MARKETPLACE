@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form action="/consumer/update-profile" method="POST">
+        <div>
+            <label>Name Surnam:</label>
+           <input type="text" name="name" value="<%= consumer.name %>">
+        </div>
+        <div>
+            <label>City:</label>
+            <input type="text" name="district" value="<%= consumer.district %>">
+        </div>
+        <div>
+            <label>New Password:(If you don't want to change it, leave it empty)</label>
+            <input type="password" name="password">
+        </div>
+        <button type="submit">Display Profile</button>
+    </form>
+</body>
+</html>
