@@ -4,6 +4,7 @@ import bcrypt from "bcrypt"
 import "dotenv/config"
 import session from "express-session"
 import cartRouter from "./routes/cart.js"
+import { sendVerificationEmail } from "./routes/mail.js"
 
 const port = process.env.PORT
 
@@ -14,7 +15,7 @@ app.use(express.urlencoded({ extended: true }))
 
 app.use(session({
     secret: process.env.SESSION_SECRET,
-    resave: false, 
+    resave: false,
     saveUninitialized: false
 }))
 
@@ -36,19 +37,49 @@ app.get("/register", (req, res) => {
 app.post("/register", async (req, res) => {
     const { email, name, password, city, district, type } = req.body
     const hashedPassword = await bcrypt.hash(password, 10)
+
+    const code = Math.random().toString(36).substring(2, 8).toUpperCase()
+
+    // store user data in session temporarily --> do not insert to db yet
+    req.session.pendingUser = { email, name, hashedPassword, city, district, type }
+    req.session.verificationCode = code
+
     try {
-        await db.query(
-            "INSERT INTO users (email, name, password, city, district, type) VALUES (?, ?, ?, ?, ?, ?)",
-            [email, name, hashedPassword, city, district, type]
-        )
-        req.session.message = "Registration successful. Please login."
-        res.redirect("/login")
-    } catch(err) {
-        let errorMessage = "Database error"
-        if (err.code === 'ER_DUP_ENTRY') {
-            errorMessage = "Enter another email."
+        await sendVerificationEmail(email, code)
+        res.redirect("/verify")
+    } catch (err) {
+        res.render("register", { message: "Failed to send verification email.", formData: req.body })
+    }
+})
+
+app.get("/verify", (req, res) => {
+    if (!req.session.pendingUser) {
+        return res.redirect("/register")
+    }
+    res.render("verify", { message: "" })
+})
+
+app.post("/verify", async (req, res) => {
+    const { code } = req.body
+
+    if (code.toUpperCase() === req.session.verificationCode) {
+        const { email, name, hashedPassword, city, district, type } = req.session.pendingUser
+        try {
+            await db.query(
+                "INSERT INTO users (email, name, password, city, district, type) VALUES (?, ?, ?, ?, ?, ?)",
+                [email, name, hashedPassword, city, district, type]
+            )
+            req.session.pendingUser = null
+            req.session.verificationCode = null
+            req.session.message = "Registration successful. Please login."
+            res.redirect("/login")
+        } catch (err) {
+            let errorMessage = "Database error"
+            if (err.code === "ER_DUP_ENTRY") errorMessage = "Email already in use."
+            res.render("verify", { message: errorMessage })
         }
-        res.render("register", { message: errorMessage, formData: req.body })
+    } else {
+        res.render("verify", { message: "Incorrect code. Please try again." })
     }
 })
 
@@ -61,7 +92,7 @@ app.get("/login", (req, res) => {
     res.render("login", { message })
 })
 
-app.post("/login", async (req,res) => {
+app.post("/login", async (req,res)=>{
     // REMEMBER ME YAZ EJS'E
     const { email, password, remember } = req.body;
     try {
@@ -72,12 +103,16 @@ app.post("/login", async (req,res) => {
         if (match) {
             req.session.user = user
             req.session.isAuthenticated = true
+            req.session.userId=user.id;
+            req.session.userType=user.type;
+
             if (remember) {
                 req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000 // 30 days
             }
-            return res.redirect("/auth")
+            return res.redirect("/auth");
         } else {
             req.session.message = "Invalid email or password"
+            req.session.oldEmail = email; // Sticky form için e-postayı hatırla
             return res.redirect("/login")
         }
       } else {
@@ -143,9 +178,9 @@ app.get("/search", requireAuth, async (req, res) => {
                 p.title ASC 
             LIMIT ? OFFSET ?`,
             [`%${keyword}%`, consumer.city, consumer.district, limit, offset])
-        
-            res.render("consumer-page", { products: searchResult, keyword, page, user: consumer, pageCount })
-    } catch(err) {
+
+        res.render("consumer-page", { products: searchResult, keyword, page, user: consumer, pageCount })
+    } catch (err) {
         res.status(500).send("Error performing search operation.")
     }
 })
@@ -153,12 +188,11 @@ app.get("/search", requireAuth, async (req, res) => {
 //MARKET USER D
 app.get("/auth", requireAuth, async (req, res) => {
     const user = req.session.user
-
     if (user.type === "market") {
         try {
             const [products] = await db.query("SELECT * FROM products WHERE market_id = ?", [user.id])
             res.render("market-page", { user, products })
-        } catch(err) {
+        } catch (err) {
             res.status(500).send("Database error while fetching products.")
         }
     } else if (user.type === "consumer") {
@@ -167,19 +201,30 @@ app.get("/auth", requireAuth, async (req, res) => {
 })
 
 app.post("/market/update-profile", requireAuth, async (req, res) => {
-    const { name, city, district } = req.body;
+    const { name, city, district, password } = req.body;
     const userId = req.session.user.id;
     try {
-        await db.query("UPDATE users SET name = ?, city = ?, district = ? WHERE id = ?", [name, city, district, userId]);
+        if (password && password.trim() !== "") {
+            const hashedPassword = await bcrypt.hash(password, 10);
+            await db.query(
+                "UPDATE users SET name = ?, city = ?, district = ?, password = ? WHERE id = ?",
+                [name, city, district, hashedPassword, userId]
+            );
+        } else {
+            await db.query(
+                "UPDATE users SET name = ?, city = ?, district = ? WHERE id = ?",
+                [name, city, district, userId]
+            );
+        }
         req.session.user.name = name;
         req.session.user.city = city;
         req.session.user.district = district;
         res.redirect("/auth");
-    } catch(err) {
-        res.status(500).send("Error updating profile.");
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Profil güncellenirken hata oluştu.");
     }
 });
-
 
 app.post("/market/add-product", requireAuth, async (req, res) => {
     const { title, stock, normal_price, discounted_price, expiration_date, image } = req.body;
@@ -190,7 +235,7 @@ app.post("/market/add-product", requireAuth, async (req, res) => {
             [market_id, title, stock, normal_price, discounted_price, expiration_date, image]
         );
         res.redirect("/auth");
-    } catch(err) {
+    } catch (err) {
         res.status(500).send("Error adding product.");
     }
 });
@@ -202,7 +247,7 @@ app.post("/market/delete-product/:id", requireAuth, async (req, res) => {
     try {
         await db.query("DELETE FROM products WHERE id = ? AND market_id = ?", [productId, marketId]);
         res.redirect("/auth");
-    } catch(err) {
+    } catch (err) {
         res.status(500).send("Error deleting product.");
     }
 });
@@ -218,7 +263,7 @@ app.post("/market/edit-product/:id", requireAuth, async (req, res) => {
             [title, stock, normal_price, discounted_price, expiration_date, image, productId, marketId]
         );
         res.redirect("/auth");
-    } catch(err) {
+    } catch (err) {
         res.status(500).send("Error updating product.");
     }
 }); //D
@@ -226,6 +271,48 @@ app.post("/market/edit-product/:id", requireAuth, async (req, res) => {
 app.get("/logout", requireAuth, (req, res) => {
     req.session.destroy()
     res.redirect("/")
+})
+
+app.get("/profile", async (req,res) => {
+
+   if(!req.session.userId){
+       return res.redirect("/login");
+    }
+    try{
+          const userId=req.session.userId;
+          const userType=req.session.userType;
+
+        const [rows]= await db.query(`SELECT * FROM users WHERE id=? AND type= ?`,
+                [ userId, userType]);
+
+        if(rows.length===0){
+            return res.redirect('/login');
+        }
+        const userData=rows[0];
+
+        if (userData.type === "market") {
+
+            const [products] = await db.query(
+                "SELECT * FROM products WHERE market_id = ?",
+                [userId]
+            );
+
+            return res.render("market-profile", {
+                market: userData,
+                products: products
+            });
+
+        } else {
+            return res.render("consumer-profile", {
+                consumer: userData
+            });
+        }
+
+    }catch(err){
+        console.error(err);
+        res.status(500).send("Server error");
+    }
+  
 })
 
 app.listen(port, () => {

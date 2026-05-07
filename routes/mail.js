@@ -9,16 +9,10 @@ const transporter = nodemailer.createTransport({
 })
 
 export async function sendVerificationEmail(email, code) {
-    try {
-        await transporter.sendMail({
-            from: "Sustainable Marketplace - Do Not Reply",
-            to: email,
-            subject: "Your Verification Code",
-            text: `Hello! Your verification code to create an account is ${code}.`
-        })
-    } catch(err) {
-        throw err
-    }
+    await transporter.sendMail({
+        from: "Do Not Reply - Sustainable Marketplace",
+        to: email,
+        subject: "Your Verification Code",
+        text: `Hello! Your verification code to create an account is ${code}.`
+    })
 }
-
-module.exports = { sendVerificationEmail }

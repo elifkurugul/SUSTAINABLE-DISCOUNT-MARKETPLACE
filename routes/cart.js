@@ -15,17 +15,17 @@ router.get("/", requireAuth, async (req, res) => {
         `, [userId])
 
         let totalPrice = 0
-        cartItems.forEach( i => {
+        cartItems.forEach(i => {
             totalPrice += (i.discounted_price * i.quantity)
         })
 
         res.render("shopping-cart", { items: cartItems, totalPrice, user: req.session.user })
-    } catch(err) {
+    } catch (err) {
         res.status(500).send("Error loading shopping cart.")
     }
 })
 
-async function getCartTotal (userId) {
+async function getCartTotal(userId) {
     const [result] = await db.query(`
         SELECT SUM(p.discounted_price * c.quantity) AS total
         FROM shopping_cart c
@@ -48,7 +48,7 @@ router.patch("/update", requireAuth, async (req, res) => {
         const newTotal = await getCartTotal(req.session.user.id)
 
         res.json({ success: true, total: newTotal.toFixed(2) })
-    } catch(err) {
+    } catch (err) {
         res.status(500).json({ success: false })
     }
 })
@@ -64,7 +64,7 @@ router.delete("/remove/:id", requireAuth, async (req, res) => {
         const newTotal = await getCartTotal(req.session.user.id)
 
         res.json({ success: true, total: newTotal.toFixed(2) })
-    } catch(err) {
+    } catch (err) {
         res.status(500).json({ success: false })
     }
 })
@@ -94,7 +94,7 @@ router.post("/purchase", requireAuth, async (req, res) => {
             `, [userId])
         }
         res.json({ success: true })
-    } catch(err) {
+    } catch (err) {
         res.status(500).json({ success: false })
     }
 })

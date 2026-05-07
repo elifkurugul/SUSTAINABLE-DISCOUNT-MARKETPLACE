@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Market Dashboard</title>
+</head>
+
+<body>
+
+    <h1>Welcome, <%= user.name %>!</h1>
+    <a href="/logout">Logout</a>
+
+    <hr>
+
+    <div>
+        <h2>Update Profile</h2>
+        <form action="/market/update-profile" method="POST">
+            <p>
+                <label>Market Name:</label><br>
+                <input type="text" name="name" value="<%= user.name %>" required>
+            </p>
+            <p>
+                <label>City:</label><br>
+                <input type="text" name="city" value="<%= user.city %>" required>
+            </p>
+            <p>
+                <label>District:</label><br>
+                <input type="text" name="district" value="<%= user.district %>" required>
+            </p>
+            <p>
+                <label>New Password (Leave it blank to keep current):</label><br>
+                <input type="password" name="password" placeholder="New Password">
+            </p>
+            <button type="submit">Update Information</button>
+        </form>
+    </div>
+
+    <hr>
+
+    <div>
+        <h2>Add New Product</h2>
+        <form action="/market/add-product" method="POST">
+            <p><input type="text" name="title" placeholder="Product Title" required></p>
+            <p><input type="number" name="stock" placeholder="Stock Quantity" required></p>
+            <p><input type="number" step="0.01" name="normal_price" placeholder="Normal Price (TL)" required></p>
+            <p><input type="number" step="0.01" name="discounted_price" placeholder="Discounted Price (TL)" required>
+            </p>
+            <p><label>Expiration Date:</label><br><input type="date" name="expiration_date" required></p>
+            <p><input type="text" name="image" placeholder="Image URL" required></p>
+            <button type="submit">Add Product to Inventory</button>
+        </form>
+    </div>
+
+    <hr>
+
+    <div>
+        <h2>Your Inventory</h2>
+
+        <% const today=new Date(); today.setHours(0,0,0,0); %>
+
+            <% if(products.length===0) { %>
+                <p>Your inventory is currently empty.</p>
+                <% } %>
+
+                    <% products.forEach(product=> {
+                        const expDate = new Date(product.expiration_date);
+                        const isExpired = expDate < today; %>
+                            <div style="border: 1px solid black; margin-bottom: 20px; padding: 10px;">
+                                <img src="<%= product.image %>" alt="<%= product.title %>" width="150">
+
+                                <% if(isExpired) { %>
+                                    <p><strong>[EXPIRED ITEM]</strong></p>
+                                    <% } %>
+
+                                        <h3>
+                                            <%= product.title %>
+                                        </h3>
+                                        <p>Stock: <%= product.stock %> units</p>
+                                        <p>
+                                            Price: <s>
+                                                <%= product.normal_price %> TL
+                                            </s>
+                                            <strong>
+                                                <%= product.discounted_price %> TL
+                                            </strong>
+                                        </p>
+                                        <p>Expiration Date: <%= expDate.toISOString().split('T')[0] %>
+                                        </p>
+
+                                        <details>
+                                            <summary>Edit Product Details</summary>
+                                            <form action="/market/edit-product/<%= product.id %>" method="POST">
+                                                <p>Title: <input type="text" name="title" value="<%= product.title %>"
+                                                        required></p>
+                                                <p>Stock: <input type="number" name="stock" value="<%= product.stock %>"
+                                                        required></p>
+                                                <p>Normal Price: <input type="number" step="0.01" name="normal_price"
+                                                        value="<%= product.normal_price %>" required></p>
+                                                <p>Discounted Price: <input type="number" step="0.01"
+                                                        name="discounted_price" value="<%= product.discounted_price %>"
+                                                        required></p>
+                                                <p>Expiration: <input type="date" name="expiration_date"
+                                                        value="<%= expDate.toISOString().split('T')[0] %>" required></p>
+                                                <p>Image URL: <input type="text" name="image"
+                                                        value="<%= product.image %>" required></p>
+                                                <button type="submit">Save Changes</button>
+                                            </form>
+                                        </details>
+
+                                        <form action="/market/delete-product/<%= product.id %>" method="POST"
+                                            style="margin-top: 10px;">
+                                            <button type="submit"
+                                                onclick="return confirm('Are you sure you want to delete this product?')">
+                                                Delete This Product
+                                            </button>
+                                        </form>
+                            </div>
+                            <% }) %>
+    </div>
+</body>
+
+</html>
