@@ -48,6 +48,8 @@ app.post("/register", async (req, res) => {
         await sendVerificationEmail(email, code)
         res.redirect("/verify")
     } catch (err) {
+        console.log(err)
+        console.log(err.message)
         res.render("register", { message: "Failed to send verification email.", formData: req.body })
     }
 })
