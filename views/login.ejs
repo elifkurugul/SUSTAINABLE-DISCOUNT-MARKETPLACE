@@ -10,11 +10,11 @@
 
     <div>
          <!-- Hata Mesajı  -->
-                    <% if (typeof error !== 'undefined' && error) { %>
-                        <div class="alert alert-danger">
-                            <%= error %>
-                        </div>
-                    <% } %>
+                  <% if (message) { %>
+                   <div style="color: red; margin-bottom: 10px;">
+                       <%= message %>
+                  </div>
+                   <% } %>
           
         <form action="/login" method="POST">
       <div>
@@ -23,20 +23,26 @@
         <input type="email"
                name="email" 
                id="email" 
-               value="<%= typeof email!=='undefined' ? email: '' %>">
+               value="<%= oldEmail %>">
       </div>
        <!-- Şifre-->
       <div>
-       <label for="password">Password:</label>
-       <input type="password"
-            name="password"
-            id="password">
+           <label for="password">Password:</label>
+              <input type="password"
+                      name="password"
+                      id="password">
       </div>
+
+              <div>
+                <input type="checkbox" name="remember" id="remember">
+                <label for="remember">Remember Me</label>
+             </div>
 
       <div>
         <button type="submit">Log In</button>
       </div>
-    </form>
+
+      </form>
     </div>
    
 

@@ -88,13 +88,21 @@ app.get("/login", (req, res) => {
         return res.redirect("/auth")
     }
     const message = req.session.message
+    const oldEmail = req.session.oldEmail || ""
     req.session.message = null
-    res.render("login", { message })
+    req.session.oldEmail = null
+    res.render("login", { message, oldEmail })
 })
 
 app.post("/login", async (req,res)=>{
     // REMEMBER ME YAZ EJS'E
     const { email, password, remember } = req.body;
+
+    if (!email || !password) {
+        req.session.message = "Please fill in all fields.";
+        req.session.oldEmail = email; 
+        return res.redirect("/login");
+    }
     try {
       const [rows] = await db.query("SELECT * FROM users WHERE email= ?", [email])
       if (rows.length > 0) {
