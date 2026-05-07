@@ -14,7 +14,7 @@ app.use(express.urlencoded({ extended: true }))
 
 app.use(session({
     secret: process.env.SESSION_SECRET,
-    resave: false, 
+    resave: false,
     saveUninitialized: false
 }))
 
@@ -43,7 +43,7 @@ app.post("/register", async (req, res) => {
         )
         req.session.message = "Registration successful. Please login."
         res.redirect("/login")
-    } catch(err) {
+    } catch (err) {
         let errorMessage = "Database error"
         if (err.code === 'ER_DUP_ENTRY') {
             errorMessage = "Enter another email."
@@ -61,30 +61,30 @@ app.get("/login", (req, res) => {
     res.render("login", { message })
 })
 
-app.post("/login", async (req,res) => {
+app.post("/login", async (req, res) => {
     // REMEMBER ME YAZ EJS'E
     const { email, password, remember } = req.body;
     try {
-      const [rows] = await db.query("SELECT * FROM users WHERE email= ?", [email])
-      if (rows.length > 0) {
-        const user = rows[0]
-        const match = await bcrypt.compare(password, user.password)
-        if (match) {
-            req.session.user = user
-            req.session.isAuthenticated = true
-            if (remember) {
-                req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000 // 30 days
+        const [rows] = await db.query("SELECT * FROM users WHERE email= ?", [email])
+        if (rows.length > 0) {
+            const user = rows[0]
+            const match = await bcrypt.compare(password, user.password)
+            if (match) {
+                req.session.user = user
+                req.session.isAuthenticated = true
+                if (remember) {
+                    req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000 // 30 days
+                }
+                return res.redirect("/auth")
+            } else {
+                req.session.message = "Invalid email or password"
+                return res.redirect("/login")
             }
-            return res.redirect("/auth")
         } else {
             req.session.message = "Invalid email or password"
             return res.redirect("/login")
         }
-      } else {
-        req.session.message = "Invalid email or password"
-        return res.redirect("/login")
-      }
-    } catch(err) {
+    } catch (err) {
         res.status(500).send("Error")
     }
 })
@@ -143,9 +143,9 @@ app.get("/search", requireAuth, async (req, res) => {
                 p.title ASC 
             LIMIT ? OFFSET ?`,
             [`%${keyword}%`, consumer.city, consumer.district, limit, offset])
-        
-            res.render("consumer-page", { products: searchResult, keyword, page, user: consumer, pageCount })
-    } catch(err) {
+
+        res.render("consumer-page", { products: searchResult, keyword, page, user: consumer, pageCount })
+    } catch (err) {
         res.status(500).send("Error performing search operation.")
     }
 })
@@ -153,12 +153,11 @@ app.get("/search", requireAuth, async (req, res) => {
 //MARKET USER D
 app.get("/auth", requireAuth, async (req, res) => {
     const user = req.session.user
-
     if (user.type === "market") {
         try {
             const [products] = await db.query("SELECT * FROM products WHERE market_id = ?", [user.id])
             res.render("market-page", { user, products })
-        } catch(err) {
+        } catch (err) {
             res.status(500).send("Database error while fetching products.")
         }
     } else if (user.type === "consumer") {
@@ -167,19 +166,30 @@ app.get("/auth", requireAuth, async (req, res) => {
 })
 
 app.post("/market/update-profile", requireAuth, async (req, res) => {
-    const { name, city, district } = req.body;
+    const { name, city, district, password } = req.body;
     const userId = req.session.user.id;
     try {
-        await db.query("UPDATE users SET name = ?, city = ?, district = ? WHERE id = ?", [name, city, district, userId]);
+        if (password && password.trim() !== "") {
+            const hashedPassword = await bcrypt.hash(password, 10);
+            await db.query(
+                "UPDATE users SET name = ?, city = ?, district = ?, password = ? WHERE id = ?",
+                [name, city, district, hashedPassword, userId]
+            );
+        } else {
+            await db.query(
+                "UPDATE users SET name = ?, city = ?, district = ? WHERE id = ?",
+                [name, city, district, userId]
+            );
+        }
         req.session.user.name = name;
         req.session.user.city = city;
         req.session.user.district = district;
         res.redirect("/auth");
-    } catch(err) {
-        res.status(500).send("Error updating profile.");
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Profil güncellenirken hata oluştu.");
     }
 });
-
 
 app.post("/market/add-product", requireAuth, async (req, res) => {
     const { title, stock, normal_price, discounted_price, expiration_date, image } = req.body;
@@ -190,7 +200,7 @@ app.post("/market/add-product", requireAuth, async (req, res) => {
             [market_id, title, stock, normal_price, discounted_price, expiration_date, image]
         );
         res.redirect("/auth");
-    } catch(err) {
+    } catch (err) {
         res.status(500).send("Error adding product.");
     }
 });
@@ -202,7 +212,7 @@ app.post("/market/delete-product/:id", requireAuth, async (req, res) => {
     try {
         await db.query("DELETE FROM products WHERE id = ? AND market_id = ?", [productId, marketId]);
         res.redirect("/auth");
-    } catch(err) {
+    } catch (err) {
         res.status(500).send("Error deleting product.");
     }
 });
@@ -218,7 +228,7 @@ app.post("/market/edit-product/:id", requireAuth, async (req, res) => {
             [title, stock, normal_price, discounted_price, expiration_date, image, productId, marketId]
         );
         res.redirect("/auth");
-    } catch(err) {
+    } catch (err) {
         res.status(500).send("Error updating product.");
     }
 }); //D
