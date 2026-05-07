@@ -5,9 +5,9 @@ import "dotenv/config"
 import session from "express-session"
 import cartRouter from "./routes/cart.js"
 import { sendVerificationEmail } from "./routes/mail.js"
+import { body, validationResult } from "express-validator"
 
 const port = process.env.PORT
-
 const app = express()
 app.set("view engine", "ejs")
 app.use(express.static("public"))
@@ -61,10 +61,15 @@ app.get("/verify", (req, res) => {
     res.render("verify", { message: "" })
 })
 
-app.post("/verify", async (req, res) => {
-    const { code } = req.body
-
-    if (code.toUpperCase() === req.session.verificationCode) {
+app.post("/verify", 
+    body("code").trim().notEmpty().withMessage("Please enter a code.")
+                .isLength({ min: 6, max: 6 }).withMessage("Code must be 6 characters."),
+    async (req, res) => {
+        // VALIDATION TAMAMLA
+        const errors = validationResult(req)
+        const { code } = req.body
+        
+        if (code.toUpperCase() === req.session.verificationCode) {
         const { email, name, hashedPassword, city, district, type } = req.session.pendingUser
         try {
             await db.query(
