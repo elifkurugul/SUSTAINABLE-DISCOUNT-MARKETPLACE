@@ -102,6 +102,60 @@ app.get("/auth", requireAuth, async (req, res) => {
     }
 })
 
+app.get("/search", requireAuth, async (req, res) => {
+    // req.body --> for data sent in the hidden part of a POST request
+    // req.query --> an object Express creates by parsing the URL string
+    // --> because of name="keyword", the browser takes what you typed and
+    // sticks it to the url as ?keyword=...
+    const keyword = req.query.keyword || ""
+    const consumer = req.session.user
+
+    // pagination (default to page 1)
+    const page = Number(req.query.page || 1)
+    const limit = 4
+    const offset = (page - 1) * limit
+    // offset --> (where to start) --> tells the db how many rows to jump over before it starts handling the data.
+    // limit --> num of items per page
+
+    try {
+        // to get the count of search result
+        const [countResult] = await db.query(`
+            SELECT COUNT(*) as total
+            FROM products p
+            JOIN users u ON p.market_id = u.id
+            WHERE p.title LIKE ?
+            AND u.city = ?
+            AND p.expiration_date >= CURDATE()`,
+            [`%${keyword}%`, consumer.city]
+        )
+
+        const totalItems = countResult[0].total
+        const pageCount = Math.ceil(totalItems / limit)
+
+        // the case statement: 1 --> if m.district = c.district, the product is given a score of 1
+        // --> else, a score of 2 --> bc of order by, all 2's go after the 1's (priority)
+        const [searchResult] = await db.query(`
+            SELECT p.id, p.market_id, p.title, p.stock, p.normal_price, p.discounted_price, p.expiration_date, p.image, u.district, u.name, u.city
+            FROM products p
+            JOIN users u ON p.market_id = u.id
+            WHERE p.title LIKE ?
+            AND u.city = ?
+            AND p.expiration_date >= CURDATE() 
+            ORDER BY 
+                CASE
+                    WHEN u.district = ? 
+                    THEN 1 ELSE 2
+                END,
+                p.title ASC 
+            LIMIT ? OFFSET ?`,
+            [`%${keyword}%`, consumer.city, consumer.district, limit, offset])
+        
+            res.render("consumer-page", { products: searchResult, keyword, page, user: consumer, pageCount })
+    } catch(err) {
+        res.status(500).send("Error performing search operation.")
+    }
+})
+
 app.get("/logout", requireAuth, (req, res) => {
     req.session.destroy()
     res.redirect("/")

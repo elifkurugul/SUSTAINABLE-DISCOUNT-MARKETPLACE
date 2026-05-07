@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consumer</title>
+</head>
+<body>
+    <form action="/search" method="GET" class="search">
+        <input type="text" name="keyword" 
+         value="<%= typeof (keyword) !== 'undefined' ? keyword : '' %>"
+         placeholder="Type to search for products...">
+        <button type="submit">Search</button>
+    </form>
+
+    <% if (typeof (products) !== 'undefined') { %>
+        <% if (products.length > 0) { %>
+            <div class="results">
+                <% products.forEach( p => { %>
+                    <div>
+                        <!-- <p><img src="/images/<%= p.image %>"></p> -->
+                        <p>Title: <%= p.title %></p>
+                        <p>Market Name: <%= p.name %></p>
+                        <p>Discounted Price: <b><%= p.discounted_price %></b></p>
+                        <p>Normal Price: <%= p.normal_price %></p>
+                        <p>Stock: <%= p.stock %></p>
+                        <p>City: <%= p.city %></p>
+                        <p>District: <%= p.district %></p>
+                        <p>Expiration Date: <b><%= new Date(p.expiration_date).toLocaleDateString() %></b></p>
+                    </div>
+                <% }) %>
+            </div>
+            <div class="pagination">
+                <% if (typeof (pageCount) !== 'undefined') { %>
+                    <% for (let i = 1; i <= pageCount; i++) { %>
+                        <div><</div>
+                        <% if (i === page) { %>
+                            <strong><%= i %></strong>
+                        <% } else { %>
+                            <a href="/search/?keyword=<%= keyword %>&page=<%= i %>"><%= i %></a>
+                        <% } %>
+                        <div>></div>
+                    <% } %>
+                <% } %>
+            </div>
+        <% } else { %>
+            <p>No products found!</p>
+        <% } %>
+    <% } %>
+</body>
+</html>
