@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <header>
+        <nav>
+            <h1>Market-Profile</h1>
+
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/products">Products</a></li>
+                <li><a href="/orders">Orders</a></li>
+                <li><a href="/logout">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+
+    <section>
+        <h2>Market Information</h2>
+        <div>
+            <!--IMG SRC MARKET IMAGE-LOGO GELEBILIR-->
+        </div>
+       <form action="/market/update-profile" method="POST">
+          <div>
+             <p>Market Name:<input type="text" name="name" value="<%= market.name %>" ></p>
+                <p>Email: <input type="text" name="email" value="<%= market.email%>" ></p>
+                <p>Phone:<input type="text" name="phone" value="<%= market.phone %>" ></p>
+                <p>Address:<input type="text" name="city" value="<%= market.city %>" ></p>
+                <p>District:<input type="text" name="district" value="<%= market.district %>" ></p>
+            <button type="submit">Update Info</button>
+        </div>
+       </form>
+    </section>
+    <hr>
+    <section>
+        <h2>Add new product</h2>
+        <form action="/market/add-product" method="POST">
+            <input type="text" name="title" placeholder="Product title" >
+            <input type="number" name="stock" placeholder="Number of Stock">
+            <!--BACKEND PARSE ET= parseFloat-->
+            <input type="number" name="normal_price" placeholder="Price" >
+            <input type="number" name="discounted_price" placeholder="Discounted Price">
+            <input type="date" name="expiration_date" required>
+            <button type="submit">Add Product To The System</button>
+        </form>
+
+    </section>
+
+  <section>
+            <h2>Products</h2>
+
+            <% if(products.length === 0){ %>
+                <p>No products added yet.</p>
+            <% } %>
+
+            <% products.forEach(product => { %>
+
+              <% const isExpired = new Date(product.expiration_date) < new Date(); %>
+                <div>
+
+                    <% if(isExpired) { %>
+                    <strong style="color: red;">EXPIRED PRODUCT</strong> 
+                     <% } %>
+
+                    <img src="<%= product.image %>" alt="Product Image" width="150">
+
+                 <form action="/market/edit-product/<%= product.id %>" method="POST">
+                    <h3><%= product.title %></h3>
+
+                    <p>
+                        <strong>Price:</strong>
+                        <%= product.normal_price %> ₺
+                    </p>
+
+                    <p>
+                        <strong>Discount:</strong>
+                        <%= product.discounted_price %>%
+                    </p>
+
+                    <p>
+                        <strong>Stock:</strong>
+                        <%= product.stock %>
+                    </p>
+
+                  <p>
+                    <strong>Expiration Date:</strong> <%= new Date(product.expiration_date).toLocaleDateString() %>
+                  </p>
+
+                  <button type="submit">Save Changes</button>
+                </form>
+
+                    <form action="/market/delete-product/<%= product.id %>" method="POST">
+                        <button type="submit">Delete</button>
+                    </form>
+
+                </div>
+
+                <hr>
+            <% }) %>
+
+        </section>
+
+    
+</body>
+</html>
