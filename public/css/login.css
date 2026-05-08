@@ -121,14 +121,14 @@ button[type="submit"]:hover {
   background: var(--pink-deep);
 }
 
-body>div>div:last-child {
+body > div > div:nth-last-child(2) {
   text-align: center;
   margin-top: 1rem;
   font-size: 0.88rem;
   color: var(--text-muted);
 }
 
-body>div>div:last-child a {
+body > div > div:nth-last-child(2) a {
   color: var(--pink-deep);
   font-weight: 600;
 }

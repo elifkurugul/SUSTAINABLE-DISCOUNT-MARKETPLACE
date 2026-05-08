@@ -265,9 +265,19 @@ app.post("/market/update-profile", requireAuth, async (req, res) => {
 });
 
 app.post("/market/add-product", requireAuth, upload.single("image"), async (req, res) => {
-    const { title, stock, normal_price, discounted_price, expiration_date } = req.body;
-    const market_id = req.session.user.id;
+    const { title, stock, normal_price, discounted_price, expiration_date } = req.body
+    const market_id = req.session.user.id
 
+    // validate expiration date
+    const today = new Date()
+    today.setHours(0, 0, 0, 0) // today is a valid expiration
+    const inputDate = new Date(expiration_date)
+
+    if (inputDate < today) {
+        return res.status(400).send("Error: You cannot add a product with an expiration date in the past.")
+    }
+
+    // img upload validation
     if (!req.file) {
         return res.status(400).send("Please upload an image for the product.")
     }
@@ -275,8 +285,7 @@ app.post("/market/add-product", requireAuth, upload.single("image"), async (req,
     if (![".jpg", ".jpeg", ".png", ".gif"].includes(ext)) {
         return res.status(400).send("Invalid file type. Only JPG, JPEG, PNG, and GIF are allowed.")
     }
-
-    const image = req.file.filename;
+    const image = req.file.filename
 
     try {
         await db.query(
@@ -287,7 +296,7 @@ app.post("/market/add-product", requireAuth, upload.single("image"), async (req,
     } catch (err) {
         res.status(500).send("Error adding product to database.")
     }
-})
+});
 
 
 app.post("/market/delete-product/:id", requireAuth, async (req, res) => {
@@ -301,20 +310,35 @@ app.post("/market/delete-product/:id", requireAuth, async (req, res) => {
     }
 });
 
-app.post("/market/edit-product/:id", requireAuth, async (req, res) => {
+app.post("/market/edit-product/:id", requireAuth, upload.single("image"), async (req, res) => {
     const productId = req.params.id;
     const marketId = req.session.user.id;
-    const { title, stock, normal_price, discounted_price, expiration_date, image } = req.body;
+    const { title, stock, normal_price, discounted_price, expiration_date } = req.body;
+    
     try {
-        await db.query(
-            "UPDATE products SET title = ?, stock = ?, normal_price = ?, discounted_price = ?, expiration_date = ?, image = ? WHERE id = ? AND market_id = ?",
-            [title, stock, normal_price, discounted_price, expiration_date, image, productId, marketId]
-        );
-        res.redirect("/auth");
+        if (req.file) {
+            // user uploads new image
+            const ext = path.extname(req.file.originalname).toLowerCase();
+            if (![".jpg", ".jpeg", ".png", ".gif"].includes(ext)) {
+                return res.status(400).send("Invalid file type. Only JPG, JPEG, PNG, and GIF are allowed.")
+            }
+            const newImage = req.file.filename;
+            await db.query(
+                "UPDATE products SET title = ?, stock = ?, normal_price = ?, discounted_price = ?, expiration_date = ?, image = ? WHERE id = ? AND market_id = ?",
+                [title, stock, normal_price, discounted_price, expiration_date, newImage, productId, marketId]
+            )
+        } else {
+            // no new image
+            await db.query(
+                "UPDATE products SET title = ?, stock = ?, normal_price = ?, discounted_price = ?, expiration_date = ? WHERE id = ? AND market_id = ?",
+                [title, stock, normal_price, discounted_price, expiration_date, productId, marketId]
+            )
+        }
+        res.redirect("/auth")
     } catch (err) {
-        res.status(500).send("Error updating product.");
+        res.status(500).send("Error updating product.")
     }
-}); //D
+})
 
 app.post("/consumer/update-profile", requireAuth, async (req, res) => {
     const { name, city, district, password } = req.body;

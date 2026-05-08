@@ -41,7 +41,7 @@
 
     <div>
         <h2>Add New Product</h2>
-        <form action="/market/add-product" method="POST" enctype="multipart/form-data">
+        <form action="/market/add-product" method="POST" enctype="multipart/form-data" id="add-product-form">
             <p><input type="text" name="title" placeholder="Product Title" required></p>
             <p><input type="number" name="stock" placeholder="Stock Quantity" required></p>
             <p><input type="number" step="0.01" name="normal_price" placeholder="Normal Price (TL)" required></p>
@@ -94,20 +94,18 @@
 
                                         <details>
                                             <summary>Edit Product Details</summary>
-                                            <form action="/market/edit-product/<%= product.id %>" method="POST">
-                                                <p>Title: <input type="text" name="title" value="<%= product.title %>"
-                                                        required></p>
-                                                <p>Stock: <input type="number" name="stock" value="<%= product.stock %>"
-                                                        required></p>
-                                                <p>Normal Price: <input type="number" step="0.01" name="normal_price"
-                                                        value="<%= product.normal_price %>" required></p>
-                                                <p>Discounted Price: <input type="number" step="0.01"
-                                                        name="discounted_price" value="<%= product.discounted_price %>"
-                                                        required></p>
-                                                <p>Expiration: <input type="date" name="expiration_date"
-                                                        value="<%= expDate.toISOString().split('T')[0] %>" required></p>
-                                                <p>Image URL: <input type="text" name="image"
-                                                        value="<%= product.image %>" required></p>
+                                            <form action="/market/edit-product/<%= product.id %>" method="POST" enctype="multipart/form-data">
+                                                <p>Title: <input type="text" name="title" value="<%= product.title %>" required></p>
+                                                <p>Stock: <input type="number" name="stock" value="<%= product.stock %>" required></p>
+                                                <p>Normal Price: <input type="number" step="0.01" name="normal_price" value="<%= product.normal_price %>" required></p>
+                                                <p>Discounted Price: <input type="number" step="0.01" name="discounted_price" value="<%= product.discounted_price %>" required></p>
+                                                <p>Expiration: <input type="date" name="expiration_date" value="<%= expDate.toISOString().split('T')[0] %>" required></p>
+                                                
+                                                <p>Update Image (Leave blank to keep current):<br>
+                                                    <input type="file" name="image" accept="image/*">
+                                                </p>
+                                                <p style="font-size: 0.8rem; color: gray;">Current: <%= product.image %></p>
+                                                
                                                 <button type="submit">Save Changes</button>
                                             </form>
                                         </details>
@@ -122,6 +120,22 @@
                             </div>
                             <% }) %>
     </div>
+
+    <script>
+        document.getElementById('add-product-form').addEventListener('submit', function(event) {
+            const inputDate = document.querySelector('input[name="expiration_date"]').value;
+            
+            const today = new Date().toISOString().split('T')[0];
+            
+            if (inputDate < today) {
+                event.preventDefault(); // prevent form from submitting
+                alert("Expiration date cannot be in the past!");
+            }
+        });
+    </script>
+</body>
+</body>
+</html>
 </body>
 
 </html>
