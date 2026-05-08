@@ -22,7 +22,7 @@ body {
   padding: 1.5rem;
 }
 
-/* Top bar */
+
 body > div:first-child {
   max-width: 1100px;
   margin: 0 auto 1.5rem;

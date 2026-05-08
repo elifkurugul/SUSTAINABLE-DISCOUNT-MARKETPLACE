@@ -1,6 +1,6 @@
 import mysql from 'mysql2/promise';
 const db = mysql.createPool({
-    host: 'localhost',  
+    host: 'localhost',
     user: 'std',
     password: 'std',
     database: 'discount_marketplace',

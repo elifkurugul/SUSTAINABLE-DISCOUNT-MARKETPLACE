@@ -31,28 +31,37 @@ app.get("/", async (req, res) => {
 })
 
 app.get("/register", (req, res) => {
-    res.render("register", { message: "", formData: {} })
-})
+    res.render("register", { message: "", formData: {} });
+});
 
 app.post("/register", async (req, res) => {
-    const { email, name, password, city, district, type } = req.body
-    const hashedPassword = await bcrypt.hash(password, 10)
-
-    const code = Math.random().toString(36).substring(2, 8).toUpperCase()
-
-    // store user data in session temporarily --> do not insert to db yet
-    req.session.pendingUser = { email, name, hashedPassword, city, district, type }
-    req.session.verificationCode = code
-
-    try {
-        await sendVerificationEmail(email, code)
-        res.redirect("/verify")
-    } catch (err) {
-        console.log(err)
-        console.log(err.message)
-        res.render("register", { message: "Failed to send verification email.", formData: req.body })
+    const { email, name, password, city, district, type } = req.body;
+    if (!email || !name || !password || !city || !district || !type) {
+        return res.render("register", {
+            message: "Please fill all fields.",
+            formData: req.body //no deletion of data
+        });
     }
-})
+    try {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+
+        req.session.pendingUser = { email, name, hashedPassword, city, district, type };
+        req.session.verificationCode = code;
+
+        await sendVerificationEmail(email, code);
+        res.redirect("/verify");
+
+    } catch (err) {
+        console.log(err);
+        console.log(err.message);
+        // email problem
+        res.render("register", {
+            message: "An error occurred while sending the email. Please try again.",
+            formData: req.body
+        });
+    }
+});
 
 app.get("/verify", (req, res) => {
     if (!req.session.pendingUser) {
@@ -61,34 +70,34 @@ app.get("/verify", (req, res) => {
     res.render("verify", { message: "" })
 })
 
-app.post("/verify", 
+app.post("/verify",
     body("code").trim().notEmpty().withMessage("Please enter a code.")
-                .isLength({ min: 6, max: 6 }).withMessage("Code must be 6 characters."),
+        .isLength({ min: 6, max: 6 }).withMessage("Code must be 6 characters."),
     async (req, res) => {
         // VALIDATION TAMAMLA
         const errors = validationResult(req)
         const { code } = req.body
-        
+
         if (code.toUpperCase() === req.session.verificationCode) {
-        const { email, name, hashedPassword, city, district, type } = req.session.pendingUser
-        try {
-            await db.query(
-                "INSERT INTO users (email, name, password, city, district, type) VALUES (?, ?, ?, ?, ?, ?)",
-                [email, name, hashedPassword, city, district, type]
-            )
-            req.session.pendingUser = null
-            req.session.verificationCode = null
-            req.session.message = "Registration successful. Please login."
-            res.redirect("/login")
-        } catch (err) {
-            let errorMessage = "Database error"
-            if (err.code === "ER_DUP_ENTRY") errorMessage = "Email already in use."
-            res.render("verify", { message: errorMessage })
+            const { email, name, hashedPassword, city, district, type } = req.session.pendingUser
+            try {
+                await db.query(
+                    "INSERT INTO users (email, name, password, city, district, type) VALUES (?, ?, ?, ?, ?, ?)",
+                    [email, name, hashedPassword, city, district, type]
+                )
+                req.session.pendingUser = null
+                req.session.verificationCode = null
+                req.session.message = "Registration successful. Please login."
+                res.redirect("/login")
+            } catch (err) {
+                let errorMessage = "Database error"
+                if (err.code === "ER_DUP_ENTRY") errorMessage = "Email already in use."
+                res.render("verify", { message: errorMessage })
+            }
+        } else {
+            res.render("verify", { message: "Incorrect code. Please try again." })
         }
-    } else {
-        res.render("verify", { message: "Incorrect code. Please try again." })
-    }
-})
+    })
 
 app.get("/login", (req, res) => {
     if (req.session.isAuthenticated) {
@@ -101,40 +110,40 @@ app.get("/login", (req, res) => {
     res.render("login", { message, oldEmail })
 })
 
-app.post("/login", async (req,res)=>{
+app.post("/login", async (req, res) => {
     // REMEMBER ME YAZ EJS'E
     const { email, password, remember } = req.body;
 
     if (!email || !password) {
         req.session.message = "Please fill in all fields.";
-        req.session.oldEmail = email; 
+        req.session.oldEmail = email;
         return res.redirect("/login");
     }
     try {
-      const [rows] = await db.query("SELECT * FROM users WHERE email= ?", [email])
-      if (rows.length > 0) {
-        const user = rows[0]
-        const match = await bcrypt.compare(password, user.password)
-        if (match) {
-            req.session.user = user
-            req.session.isAuthenticated = true
-            req.session.userId=user.id;
-            req.session.userType=user.type;
+        const [rows] = await db.query("SELECT * FROM users WHERE email= ?", [email])
+        if (rows.length > 0) {
+            const user = rows[0]
+            const match = await bcrypt.compare(password, user.password)
+            if (match) {
+                req.session.user = user
+                req.session.isAuthenticated = true
+                req.session.userId = user.id;
+                req.session.userType = user.type;
 
-            if (remember) {
-                req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000 // 30 days
+                if (remember) {
+                    req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000 // 30 days
+                }
+                return res.redirect("/auth");
+            } else {
+                req.session.message = "Invalid email or password"
+                req.session.oldEmail = email; // Sticky form için e-postayı hatırla
+                return res.redirect("/login")
             }
-            return res.redirect("/auth");
         } else {
             req.session.message = "Invalid email or password"
-            req.session.oldEmail = email; // Sticky form için e-postayı hatırla
             return res.redirect("/login")
         }
-      } else {
-        req.session.message = "Invalid email or password"
-        return res.redirect("/login")
-      }
-    } catch(err) {
+    } catch (err) {
         res.status(500).send("Error")
     }
 })
@@ -282,7 +291,7 @@ app.post("/market/edit-product/:id", requireAuth, async (req, res) => {
     }
 }); //D
 
-app.post("/consumer/update-profile", requireAuth, async (req,res)=>{
+app.post("/consumer/update-profile", requireAuth, async (req, res) => {
     const { name, city, district, password } = req.body;
     const userId = req.session.user.id;
 
@@ -305,7 +314,7 @@ app.post("/consumer/update-profile", requireAuth, async (req,res)=>{
         req.session.user.district = district;
         req.session.message = "Profile updated successfully."
         res.redirect("/profile");
-    }catch(err){
+    } catch (err) {
         console.error(err);
         res.status(500).send("Some error happened updating profile")
     }
@@ -316,22 +325,22 @@ app.get("/logout", requireAuth, (req, res) => {
     res.redirect("/")
 })
 
-app.get("/profile", async (req,res) => {
+app.get("/profile", async (req, res) => {
 
-   if(!req.session.userId){
-       return res.redirect("/login");
+    if (!req.session.userId) {
+        return res.redirect("/login");
     }
-    try{
-          const userId=req.session.userId;
-          const userType=req.session.userType;
+    try {
+        const userId = req.session.userId;
+        const userType = req.session.userType;
 
-        const [rows]= await db.query(`SELECT * FROM users WHERE id=? AND type= ?`,
-                [ userId, userType]);
+        const [rows] = await db.query(`SELECT * FROM users WHERE id=? AND type= ?`,
+            [userId, userType]);
 
-        if(rows.length===0){
+        if (rows.length === 0) {
             return res.redirect('/login');
         }
-        const userData=rows[0];
+        const userData = rows[0];
 
         if (userData.type === "market") {
 
@@ -351,11 +360,11 @@ app.get("/profile", async (req,res) => {
             });
         }
 
-    }catch(err){
+    } catch (err) {
         console.error(err);
         res.status(500).send("Server error");
     }
-  
+
 })
 
 app.listen(port, () => {
