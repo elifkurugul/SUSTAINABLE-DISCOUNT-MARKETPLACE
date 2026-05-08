@@ -8,6 +8,7 @@
 </head>
 <body>
     <div>
+        <p><b><%= user.name %></b>'s page!</p>
         <form action="/search" method="GET" class="search">
             <input type="text" name="keyword"
              value="<%= typeof (keyword) !== 'undefined' ? keyword : '' %>"

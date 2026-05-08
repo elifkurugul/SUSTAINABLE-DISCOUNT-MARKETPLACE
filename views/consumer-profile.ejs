@@ -14,7 +14,7 @@
 
     <form action="/consumer/update-profile" method="POST">
         <div>
-            <label>Name Surnam:</label>
+            <label>Name Surname:</label>
            <input type="text" name="name" value="<%= consumer.name %>">
         </div>
         <div>
@@ -26,10 +26,11 @@
             <input type="text" name="district" value="<%= consumer.district %>">
         </div>
         <div>
-            <label>New Password:(If you don't want to change it, leave it empty)</label>
-            <input type="password" name="password">
+            <label>New Password:</label>
+            <input type="password" name="password" placeholder="If you do not want to change it, leave it empty.">
         </div>
         <button type="submit">Update Profile</button>
+        <a href="/search">Back to Main Page</a>
     </form>
 </body>
 </html>
