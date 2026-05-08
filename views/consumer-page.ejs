@@ -32,9 +32,9 @@
     <% if (typeof (products) !== 'undefined') { %>
         <div class="search-banner">
             <% if (keyword.trim() === "") { %>
-                ✨ All products in your city (<b><%= user.city %></b>)
+                 All products in your city (<b><%= user.city %></b>)
             <% } else { %>
-                🎀 Search results for "<b><%= keyword %></b>" in <b><%= user.city %></b>
+                 Search results for "<b><%= keyword %></b>" in <b><%= user.city %></b>
             <% } %>
         </div>
         <% if (products.length > 0) { %>

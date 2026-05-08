@@ -1,30 +1,20 @@
-/* market-page.css — market-page.ejs */
-:root {
-  --pink-lightest: #fff0f5;
-  --pink-light:    #ffd6e7;
-  --pink-main:     #f78fb3;
-  --pink-deep:     #d63384;
-  --bg:            #fff7f9;
-  --surface:       #ffffff;
-  --text:          #5c3347;
-  --text-muted:    #a07080;
-  --border:        #f0c0d0;
-  --radius:        12px;
-  --shadow:        0 2px 12px rgba(215,100,140,0.10);
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
 body {
-  background: var(--bg);
+  background: #fff7f9;
   font-family: 'Segoe UI', sans-serif;
-  color: var(--text);
+  color: #5c3347;
   padding: 1.5rem;
 }
 
 body > h1 {
   text-align: center;
-  color: var(--pink-deep);
+  color: #d63384;
   font-size: 1.5rem;
   margin-bottom: 0.25rem;
 }
@@ -33,42 +23,50 @@ body > a {
   display: block;
   text-align: center;
   font-size: 0.85rem;
-  color: var(--text-muted);
+  color: #a07080;
   margin-bottom: 1.25rem;
 }
-body > a:hover { color: var(--pink-deep); }
 
-/* Widened slightly to 960px so the 3 columns breathe nicely */
-hr { border: none; border-top: 1px solid var(--border); margin: 1.5rem auto; max-width: 960px; }
+body > a:hover {
+  color: #d63384;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid #f0c0d0;
+  margin: 1.5rem auto;
+  max-width: 960px;
+}
 
 body > div {
   max-width: 960px;
   margin: 0 auto 1.5rem;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+  background: #ffffff;
+  border: 1px solid #f0c0d0;
+  border-radius: 12px;
   padding: 1.75rem;
-  box-shadow: var(--shadow);
+  box-shadow: 0 2px 12px rgba(215,100,140,0.10);
 }
 
 body > div h2 {
-  color: var(--pink-deep);
+  color: #d63384;
   font-size: 1.1rem;
   margin-bottom: 1rem;
   padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid #f0c0d0;
 }
 
-/* Forms */
 label {
   display: block;
   font-size: 0.83rem;
   font-weight: 600;
-  color: var(--text-muted);
+  color: #a07080;
   margin-bottom: 3px;
 }
 
-form p { margin-bottom: 0.7rem; }
+form p {
+  margin-bottom: 0.7rem;
+}
 
 input[type="text"],
 input[type="number"],
@@ -77,23 +75,22 @@ input[type="date"],
 input[type="file"] {
   width: 100%;
   padding: 0.5rem 0.8rem;
-  border: 1px solid var(--border);
+  border: 1px solid #f0c0d0;
   border-radius: 8px;
-  background: var(--pink-lightest);
-  color: var(--text);
+  background: #fff0f5;
+  color: #5c3347;
   font-size: 0.92rem;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 input:focus {
   outline: none;
-  border-color: var(--pink-main);
+  border-color: #f78fb3;
   box-shadow: 0 0 0 3px rgba(247,143,179,0.18);
 }
 
-/* Primary buttons */
 form:not([action*="delete"]) button[type="submit"] {
-  background: var(--pink-main);
+  background: #f78fb3;
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -105,9 +102,11 @@ form:not([action*="delete"]) button[type="submit"] {
   transition: background 0.2s;
   width: 100%;
 }
-form:not([action*="delete"]) button[type="submit"]:hover { background: var(--pink-deep); }
 
-/* Delete button */
+form:not([action*="delete"]) button[type="submit"]:hover {
+  background: #d63384;
+}
+
 form[action*="delete"] button {
   background: #fff;
   color: #c0405a;
@@ -121,89 +120,110 @@ form[action*="delete"] button {
   transition: background 0.2s;
   width: 100%;
 }
-form[action*="delete"] button:hover { background: #ffeef2; }
 
-
-/* =========================================
-   ✨ THE NEW INVENTORY 3-COLUMN GRID ✨ 
-   ========================================= */
-
-/* Target the 3rd div (Your Inventory) */
-body > div:nth-of-type(3) {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr); /* Exactly 3 products side-by-side */
-  gap: 1.5rem;
-  align-items: start; /* Prevents awkward stretching */
+form[action*="delete"] button:hover {
+  background: #ffeef2;
 }
 
-/* Force the Title and "Empty" text to span all 3 columns at the top */
+body > div:nth-of-type(3) {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+
 body > div:nth-of-type(3) > h2,
 body > div:nth-of-type(3) > p {
-  grid-column: 1 / -1; 
+  grid-column: 1 / -1;
   margin-bottom: 0.5rem;
 }
 
-/* The Individual Product Cards */
 div[style*="border: 1px solid black"] {
-  background: var(--surface) !important;
-  border: 1px solid var(--border) !important;
-  border-radius: var(--radius) !important;
+  background: #ffffff !important;
+  border: 1px solid #f0c0d0 !important;
+  border-radius: 12px !important;
   padding: 1.2rem !important;
-  box-shadow: var(--shadow) !important;
+  box-shadow: 0 2px 12px rgba(215,100,140,0.10) !important;
   margin-bottom: 0 !important;
   display: flex;
   flex-direction: column;
   height: 100%;
 }
 
-/* ✨ PERFECT SQUARE IMAGES ✨ */
-div[style*="border"] img { 
-  width: 100% !important; /* Overrides the ugly HTML width="150" */
+div[style*="border"] img {
+  width: 100% !important;
   height: auto !important;
-  aspect-ratio: 1 / 1; /* Forces a perfect square */
-  object-fit: cover; /* Ensures the picture fills the square without squishing */
-  border-radius: 8px; 
-  background: var(--pink-lightest); 
-  border: 1px solid var(--border);
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 8px;
+  background: #fff0f5;
+  border: 1px solid #f0c0d0;
   margin-bottom: 0.8rem;
 }
 
-div[style*="border"] h3 { font-size: 1rem; margin: 0.4rem 0 0.25rem; color: var(--pink-deep); }
-div[style*="border"] p { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 0.3rem; }
-div[style*="border"] p s { color: var(--text-muted); margin-right: 5px; }
-div[style*="border"] p strong { color: var(--pink-deep); font-size: 1.1rem;}
+div[style*="border"] h3 {
+  font-size: 1rem;
+  margin: 0.4rem 0 0.25rem;
+  color: #d63384;
+}
 
-/* Expired label */
-div[style*="border"] p strong:only-child { color: #c0405a; font-size: 0.9rem;}
+div[style*="border"] p {
+  font-size: 0.88rem;
+  color: #a07080;
+  margin-bottom: 0.3rem;
+}
 
-/* Details/summary edit toggle */
+div[style*="border"] p s {
+  color: #a07080;
+  margin-right: 5px;
+}
+
+div[style*="border"] p strong {
+  color: #d63384;
+  font-size: 1.1rem;
+}
+
+div[style*="border"] p strong:only-child {
+  color: #c0405a;
+  font-size: 0.9rem;
+}
+
 details {
-  margin-top: auto; /* Pushes the edit menu to the bottom of the card uniformly */
-  border: 1px solid var(--border);
+  margin-top: auto;
+  border: 1px solid #f0c0d0;
   border-radius: 8px;
   padding: 0.75rem;
-  background: var(--pink-lightest);
+  background: #fff0f5;
 }
+
 summary {
   cursor: pointer;
   font-size: 0.88rem;
   font-weight: 600;
-  color: var(--pink-deep);
+  color: #d63384;
   list-style: none;
   text-align: center;
 }
-summary::-webkit-details-marker { display: none; }
-summary::before { content: "⚙️ "; font-size: 0.8rem; }
 
-details form p { margin-bottom: 0.5rem; }
-details input { 
-    margin-top: 3px; 
-    padding: 0.35rem 0.6rem; 
-    font-size: 0.85rem; 
+summary::-webkit-details-marker {
+  display: none;
+}
+
+summary::before {
+  font-size: 0.8rem;
+}
+
+details form p {
+  margin-bottom: 0.5rem;
+}
+
+details input {
+  margin-top: 3px;
+  padding: 0.35rem 0.6rem;
+  font-size: 0.85rem;
 }
 
 @media (max-width: 800px) {
-  /* On smaller screens, drop to 2 columns, then 1 */
   body > div:nth-of-type(3) {
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   }

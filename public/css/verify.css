@@ -1,23 +1,16 @@
-/* verify.css — verify.ejs */
-:root {
-  --pink-lightest: #fff0f5;
-  --pink-main:     #f78fb3;
-  --pink-deep:     #d63384;
-  --bg:            #fff7f9;
-  --surface:       #ffffff;
-  --text:          #5c3347;
-  --text-muted:    #a07080;
-  --border:        #f0c0d0;
-  --radius:        14px;
-  --shadow:        0 4px 24px rgba(215,100,140,0.13);
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
 body {
-  background: var(--bg);
+  background: #fff7f9;
   font-family: 'Segoe UI', sans-serif;
-  color: var(--text);
+  color: #5c3347;
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -26,31 +19,31 @@ body {
 }
 
 .verify-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+  background: #ffffff;
+  border: 1px solid #f0c0d0;
+  border-radius: 14px;
   padding: 2.5rem 2rem;
   width: 100%;
   max-width: 400px;
-  box-shadow: var(--shadow);
+  box-shadow: 0 4px 24px rgba(215, 100, 140, 0.13);
   text-align: center;
 }
 
 .icon {
   font-size: 2.5rem;
   margin-bottom: 0.75rem;
-  color: var(--pink-main);
+  color: #f78fb3;
 }
 
 h2 {
   font-size: 1.35rem;
-  color: var(--pink-deep);
+  color: #d63384;
   margin-bottom: 0.5rem;
 }
 
 .subtitle {
   font-size: 0.88rem;
-  color: var(--text-muted);
+  color: #a07080;
   margin-bottom: 1.25rem;
   line-height: 1.55;
 }
@@ -69,10 +62,10 @@ h2 {
 input[type="text"] {
   width: 100%;
   padding: 0.65rem 1rem;
-  border: 1px solid var(--border);
+  border: 1px solid #f0c0d0;
   border-radius: 8px;
-  background: var(--pink-lightest);
-  color: var(--text);
+  background: #fff0f5;
+  color: #5c3347;
   font-size: 1.1rem;
   letter-spacing: 0.3rem;
   text-align: center;
@@ -82,13 +75,13 @@ input[type="text"] {
 
 input:focus {
   outline: none;
-  border-color: var(--pink-main);
-  box-shadow: 0 0 0 3px rgba(247,143,179,0.18);
+  border-color: #f78fb3;
+  box-shadow: 0 0 0 3px rgba(247, 143, 179, 0.18);
 }
 
 button[type="submit"] {
   width: 100%;
-  background: var(--pink-main);
+  background: #f78fb3;
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -98,13 +91,19 @@ button[type="submit"] {
   cursor: pointer;
   transition: background 0.2s;
 }
-button[type="submit"]:hover { background: var(--pink-deep); }
+
+button[type="submit"]:hover {
+  background: #d63384;
+}
 
 .back-link {
   display: inline-block;
   margin-top: 1.25rem;
   font-size: 0.85rem;
-  color: var(--text-muted);
+  color: #a07080;
   text-decoration: none;
 }
-.back-link:hover { color: var(--pink-deep); }
+
+.back-link:hover {
+  color: #d63384;
+}
