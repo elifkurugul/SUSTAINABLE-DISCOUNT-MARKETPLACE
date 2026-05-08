@@ -1,22 +1,15 @@
-:root {
-  --pink-lightest: #fff0f5;
-  --pink-main:     #f78fb3;
-  --pink-deep:     #d63384;
-  --bg:            #fff7f9;
-  --surface:       #ffffff;
-  --text:          #5c3347;
-  --text-muted:    #a07080;
-  --border:        #f0c0d0;
-  --radius:        16px;
-  --shadow:        0 4px 24px rgba(215,100,140,0.13);
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
 body {
-  background: var(--bg);
+  background: #fff7f9;
   font-family: 'Segoe UI', sans-serif;
-  color: var(--text);
+  color: #5c3347;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -24,7 +17,6 @@ body {
   justify-content: center;
 }
 
-/* Flash message */
 .alert {
   position: fixed;
   top: 1.25rem;
@@ -37,7 +29,7 @@ body {
   padding: 0.6rem 1.4rem;
   font-size: 0.88rem;
   white-space: nowrap;
-  box-shadow: 0 2px 10px rgba(200,80,120,0.12);
+  box-shadow: 0 2px 10px rgba(200, 80, 120, 0.12);
 }
 
 .hero {
@@ -47,26 +39,36 @@ body {
   gap: 2.5rem;
 }
 
-/* Logo frame */
 .logo-box {
-  border: 2.5px solid var(--border);
-  border-radius: var(--radius);
+  border: 2.5px solid #f0c0d0;
+  border-radius: 16px;
   padding: 2.5rem 4rem;
-  background: var(--surface);
-  box-shadow: var(--shadow);
+  background: #ffffff;
+  box-shadow: 0 4px 24px rgba(215, 100, 140, 0.13);
   text-align: center;
 }
 
 .logo-text {
   font-size: 2.4rem;
   font-weight: 500;
-  color: var(--text-muted);
+  color: #a07080;
   letter-spacing: 1px;
 }
 
-.logo-text .d { font-weight: 900; color: #f78fb3; }
-.logo-text .z { font-weight: 900; color: #b5a4d6; }
-.logo-text .e { font-weight: 900; color: #f4a7b9; }
+.logo-text .d {
+  font-weight: 900;
+  color: #f78fb3;
+}
+
+.logo-text .z {
+  font-weight: 900;
+  color: #b5a4d6;
+}
+
+.logo-text .e {
+  font-weight: 900;
+  color: #f4a7b9;
+}
 
 /* Buttons */
 .auth-buttons {
@@ -86,24 +88,50 @@ body {
 }
 
 .btn-login {
-  background: var(--surface);
-  color: var(--pink-deep);
-  border: 2px solid var(--pink-main);
+  background: #ffffff;
+  color: #d63384;
+  border: 2px solid #f78fb3;
 }
-.btn-login:hover { background: var(--pink-lightest); text-decoration: none; }
+
+.btn-login:hover {
+  background: #fff0f5;
+  text-decoration: none;
+}
 
 .btn-register {
-  background: var(--pink-main);
-  color: #fff;
-  border: 2px solid var(--pink-main);
+  background: #f78fb3;
+  color: #ffffff;
+  border: 2px solid #f78fb3;
 }
-.btn-register:hover { background: var(--pink-deep); border-color: var(--pink-deep); text-decoration: none; }
 
-.btn-login:active, .btn-register:active { transform: scale(0.97); }
+.btn-register:hover {
+  background: #d63384;
+  border-color: #d63384;
+  text-decoration: none;
+}
+
+.btn-login:active,
+.btn-register:active {
+  transform: scale(0.97);
+}
 
 @media (max-width: 480px) {
-  .logo-box { padding: 2rem 1.75rem; }
-  .logo-text { font-size: 1.7rem; }
-  .auth-buttons { flex-direction: column; width: 100%; }
-  .btn-login, .btn-register { text-align: center; padding: 0.8rem 0; }
+  .logo-box {
+    padding: 2rem 1.75rem;
+  }
+
+  .logo-text {
+    font-size: 1.7rem;
+  }
+
+  .auth-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .btn-login,
+  .btn-register {
+    text-align: center;
+    padding: 0.8rem 0;
+  }
 }
