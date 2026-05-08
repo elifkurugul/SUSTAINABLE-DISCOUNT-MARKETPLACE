@@ -38,6 +38,7 @@
         <% } %>
     </div>
 
+    <!-- AJAX SCRIPTS -->
     <script>
         // quantity update
         document.querySelectorAll('.qty-input').forEach(input => {
@@ -45,7 +46,7 @@
                 const cartId = this.dataset.cartId
                 const newQuantity = this.value
 
-                const response = await fetch('/cart/update', {
+                const response = await fetch('/api/cart/update', {
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ cartId, newQuantity })
@@ -65,7 +66,7 @@
             btn.addEventListener('click', async function () {
                 const cartId = this.dataset.cartId
 
-                const response = await fetch(`/cart/remove/${cartId}`, {
+                const response = await fetch(`/api/cart/remove/${cartId}`, {
                     method: 'DELETE'
                 })
                 const data = await response.json()
@@ -87,7 +88,7 @@
         const purchaseBtn = document.getElementById('purchase-btn')
         if (purchaseBtn) {
             purchaseBtn.addEventListener('click', async function () {
-                const response = await fetch('/cart/purchase', { method: 'POST' })
+                const response = await fetch('/api/cart/purchase', { method: 'POST' })
                 const data = await response.json()
 
                 if (data.success) {

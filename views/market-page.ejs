@@ -68,7 +68,7 @@
                         const expDate = new Date(product.expiration_date);
                         const isExpired = expDate < today; %>
                             <div style="border: 1px solid black; margin-bottom: 20px; padding: 10px;">
-                                <img src="<%= product.image %>" alt="<%= product.title %>" width="150">
+                                <img src="/images/<%= product.image %>" alt="<%= product.title %>" width="150">
 
                                 <% if(isExpired) { %>
                                     <p><strong>[EXPIRED ITEM]</strong></p>

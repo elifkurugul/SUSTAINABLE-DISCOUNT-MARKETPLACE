@@ -3,6 +3,43 @@ const router = express.Router()
 import db from "../db.js"
 import { requireAuth } from "../server.js"
 
+// add to cart
+router.post("/add", async (req, res) => {
+    if (!req.session.isAuthenticated || !req.session.user || req.session.user.type !== "consumer") {
+        return res.status(401).json({ success: false, message: "Please log in as a consumer to add items." });
+    }
+    const consumerId = req.session.user.id;
+    const productId = req.body.productId;
+    const quantity = parseInt(req.body.quantity) || 1;
+
+    try {
+        // check if the product is already in this consumer's shopping cart
+        const [existingItem] = await db.query(
+            "SELECT * FROM shopping_cart WHERE consumer_id = ? AND product_id = ?",
+            [consumerId, productId]
+        )
+
+        if (existingItem.length > 0) {
+            // if it exists, UPDATE the quantity
+            await db.query(
+                "UPDATE shopping_cart SET quantity = quantity + ? WHERE consumer_id = ? AND product_id = ?",
+                [quantity, consumerId, productId]
+            )
+        } else {
+            // if it does not exist, INSERT a new row
+            await db.query(
+                "INSERT INTO shopping_cart (consumer_id, product_id, quantity) VALUES (?, ?, ?)",
+                [consumerId, productId, quantity]
+            )
+        }
+        res.status(200).json({ success: true, message: "Successfully added to your cart!" })
+
+    } catch (err) {
+        console.error("Error adding to cart:", err);
+        res.status(500).json({ success: false, message: "Database error while adding to cart." })
+    }
+});
+
 router.get("/", requireAuth, async (req, res) => {
     const userId = req.session.user.id
 
@@ -38,6 +75,7 @@ async function getCartTotal(userId) {
 // update quantity
 router.patch("/update", requireAuth, async (req, res) => {
     const { cartId, newQuantity } = req.body
+
     try {
         await db.query(`
             UPDATE shopping_cart
@@ -45,10 +83,12 @@ router.patch("/update", requireAuth, async (req, res) => {
             WHERE id = ?
         `, [newQuantity, cartId])
 
-        const newTotal = await getCartTotal(req.session.user.id)
+        let newTotal = await getCartTotal(req.session.user.id)
 
+        newTotal = parseFloat(newTotal) || 0
         res.json({ success: true, total: newTotal.toFixed(2) })
     } catch (err) {
+        console.log(err)
         res.status(500).json({ success: false })
     }
 })
@@ -73,26 +113,32 @@ router.delete("/remove/:id", requireAuth, async (req, res) => {
 router.post("/purchase", requireAuth, async (req, res) => {
     const userId = req.session.user.id
     try {
-        const [items] = await db.query(`
-            SELECT product_id
+        const [cartItems] = await db.query(`
+            SELECT product_id, quantity
             FROM shopping_cart
             WHERE consumer_id = ?
         `, [userId])
-        const idsToDelete = items.map(i => i.product_id)
 
-        if (idsToDelete.length > 0) {
-            // remove products from the table (system)
-            await db.query(`
-                DELETE FROM products
-                WHERE id IN (?)
-            `, [idsToDelete])
+        if (cartItems.length > 0) {
+            for (let item of cartItems) {
+                await db.query(`
+                    UPDATE products 
+                    SET stock = stock - ? 
+                    WHERE id = ?
+                `, [item.quantity, item.product_id]);
 
-            // clear the cart
-            await db.query(`
-                DELETE FROM shopping_cart
-                WHERE consumer_id = ?
-            `, [userId])
+                await db.query(`
+                    DELETE FROM products 
+                    WHERE id = ? AND stock <= 0
+                `, [item.product_id]);
+            }
         }
+        // clear shopping cart
+        await db.query(`
+            DELETE FROM shopping_cart
+            WHERE consumer_id = ?
+        `, [userId]);
+
         res.json({ success: true })
     } catch (err) {
         res.status(500).json({ success: false })

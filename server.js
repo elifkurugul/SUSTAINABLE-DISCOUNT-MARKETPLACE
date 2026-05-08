@@ -211,7 +211,7 @@ app.get("/auth", requireAuth, async (req, res) => {
             res.status(500).send("Database error while fetching products.")
         }
     } else if (user.type === "consumer") {
-        res.render("consumer-page", { user })
+        res.redirect("/search")
     }
 })
 

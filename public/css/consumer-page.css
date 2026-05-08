@@ -24,7 +24,7 @@ body {
 
 /* Top bar */
 body > div:first-child {
-  max-width: 860px;
+  max-width: 1100px;
   margin: 0 auto 1.5rem;
   display: flex;
   align-items: center;
@@ -86,11 +86,11 @@ body > div:first-child {
 
 /* Product grid */
 .results {
-  max-width: 860px;
+  max-width: 1100;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
 }
 
 .results > div {
@@ -107,7 +107,7 @@ body > div:first-child {
 .results > div p { font-size: 0.88rem; color: var(--text-muted); }
 .results > div p b { color: var(--pink-deep); }
 
-/* No products */
+/* no products */
 body > p {
   text-align: center;
   color: var(--text-muted);
@@ -115,32 +115,107 @@ body > p {
   font-size: 0.95rem;
 }
 
-/* Pagination */
+/* pagination */
 .pagination {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 0.4rem;
-  flex-wrap: wrap;
-  margin: 1.5rem auto;
-  max-width: 860px;
+  gap: 1.5rem;
+  margin: 3rem auto 2rem;
 }
 
-.pagination a,
-.pagination div,
-.pagination strong {
-  padding: 0.3rem 0.7rem;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  font-size: 0.88rem;
-  color: var(--text);
+.pagination .arrow {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 45px;
+  height: 45px;
   background: var(--surface);
+  border: 2px solid var(--pink-main);
+  color: var(--pink-deep);
+  border-radius: 50%;
+  font-size: 1.4rem;
+  font-weight: bold;
   text-decoration: none;
+  transition: all 0.2s ease;
+  cursor: pointer;
 }
 
-.pagination strong {
+.pagination a.arrow:hover {
   background: var(--pink-main);
   color: #fff;
-  border-color: var(--pink-main);
+  box-shadow: 0 4px 12px rgba(247, 143, 179, 0.3);
+  transform: scale(1.05);
 }
-.pagination a:hover { background: var(--pink-lightest); }
+
+.pagination .arrow.inactive {
+  border-color: var(--border);
+  color: #c9a9b6; 
+  background: var(--pink-lightest);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.pagination .current-page {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--pink-deep);
+  min-width: 30px;
+  text-align: center;
+}
+
+/* for the images */
+.results > div img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 0.8rem;
+  border: 1px solid var(--border);
+  background-color: var(--pink-lightest);
+  transition: transform 0.3s ease;
+}
+
+.results > div:hover img {
+  transform: scale(1.03); 
+}
+
+.add-to-cart-btn {
+  width: 100%;
+  padding: 0.6rem;
+  margin-top: 0.8rem;
+  background: var(--pink-main);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.add-to-cart-btn:hover {
+  background: var(--pink-deep);
+  box-shadow: 0 4px 8px rgba(214, 51, 132, 0.2);
+}
+
+.search-banner {
+  max-width: 860px;
+  margin: 1.5rem auto;
+  background: linear-gradient(135deg, var(--pink-main), var(--pink-deep));
+  color: #ffffff;
+  padding: 1rem 1.5rem;
+  border-radius: var(--radius);
+  font-size: 1.15rem;
+  font-weight: 500;
+  box-shadow: 0 4px 15px rgba(214, 51, 132, 0.3);
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+.search-banner b {
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.25);
+  padding: 0.2rem 0.6rem;
+  border-radius: 8px;
+  margin: 0 0.2rem;
+}
