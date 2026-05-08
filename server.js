@@ -38,10 +38,21 @@ app.use("/api/cart", cartRouter)
 
 app.get("/", async (req, res) => {
     if (req.session.isAuthenticated) {
-        return res.redirect("/main")
+        return res.redirect("/auth")
     }
-    res.render("index", { message: req.session.message })
-    req.session.message = null
+    try {
+        const message = req.session.message
+        req.session.message = null
+
+        const [products] = await db.query(`
+            SELECT * FROM products
+            WHERE expiration_date >= CURDATE()
+            ORDER BY RAND()
+        `)
+        res.render("index", { message, products })
+    } catch (err) {
+        res.status(500).send("Database error")
+    }
 })
 
 app.get("/register", (req, res) => {
@@ -133,53 +144,69 @@ app.get("/login", (req, res) => {
     })
 })
 
-app.post("/login", async (req, res) => {
-    // REMEMBER ME YAZ EJS'E
+app.post("/login", [
+    body("email").trim().notEmpty().withMessage("E-Mail Address is required.")
+                 .isEmail().withMessage("Please enter a valid e-mail address."),
+    body("password").notEmpty().withMessage("Password is required.")
+], async (req, res) => {
+    const errors = validationResult(req);
     const { email, password, remember } = req.body;
+    
+    const isRememberChecked = remember === 'on'
 
-    if (!email || !password) {
-        req.session.message = "Please fill in all fields.";
-        req.session.oldEmail = email;
-        req.session.oldRemember = remember;
-        return res.redirect("/login");
+    if (!errors.isEmpty()) {
+        return res.render("login", {
+            message: errors.array()[0].msg,
+            oldEmail: email,
+            oldRemember: isRememberChecked 
+        });
     }
     try {
-        const [rows] = await db.query("SELECT * FROM users WHERE email= ?", [email])
+        const [rows] = await db.query("SELECT * FROM users WHERE email= ?", [email]);
+        
         if (rows.length > 0) {
-            const user = rows[0]
-            const match = await bcrypt.compare(password, user.password)
+            const user = rows[0];
+            const match = await bcrypt.compare(password, user.password);
+            
             if (match) {
-                req.session.user = user
-                req.session.isAuthenticated = true
+                req.session.user = user;
+                req.session.isAuthenticated = true;
                 req.session.userId = user.id;
                 req.session.userType = user.type;
 
-                if (remember) {
-                    req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000 // 30 days
+                if (isRememberChecked) {
+                    req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000; // 30 days
                 }
                 return res.redirect("/auth");
             } else {
-                req.session.message = "Invalid email or password"
-                req.session.oldEmail = email; // Sticky form için e-postayı hatırla
-                return res.redirect("/login")
+                return res.render("login", {
+                    message: "Invalid email or password.",
+                    oldEmail: email,
+                    oldRemember: isRememberChecked
+                });
             }
         } else {
-            req.session.message = "Invalid email or password"
-            return res.redirect("/login")
+            return res.render("login", {
+                message: "Invalid email or password.",
+                oldEmail: email,
+                oldRemember: isRememberChecked
+            });
         }
     } catch (err) {
-        res.status(500).send("Error")
+        console.error("Login Database Error:", err);
+        res.status(500).send("Error");
     }
-})
+});
 
 export function requireAuth(req, res, next) {
     if (req.session.isAuthenticated) {
         return next()
     }
-    res.redirect("/login")
+    return res.status(401).json({ success: false, message: "Session expired. Please log in again." })
 }
 
 app.get("/search", requireAuth, async (req, res) => {
+    req.session.returnTo = req.originalUrl // to remember page when returning from cart
     // req.body --> for data sent in the hidden part of a POST request
     // req.query --> an object Express creates by parsing the URL string
     // --> because of name="keyword", the browser takes what you typed and
@@ -200,7 +227,7 @@ app.get("/search", requireAuth, async (req, res) => {
             SELECT COUNT(*) as total
             FROM products p
             JOIN users u ON p.market_id = u.id
-            WHERE p.title LIKE ?
+            WHERE (p.title COLLATE utf8mb4_general_ci LIKE ?)
             AND u.city = ?
             AND p.expiration_date >= CURDATE()`,
             [`%${keyword}%`, consumer.city]
@@ -215,7 +242,7 @@ app.get("/search", requireAuth, async (req, res) => {
             SELECT p.id, p.market_id, p.title, p.stock, p.normal_price, p.discounted_price, p.expiration_date, p.image, u.district, u.name, u.city
             FROM products p
             JOIN users u ON p.market_id = u.id
-            WHERE p.title LIKE ?
+            WHERE (p.title COLLATE utf8mb4_general_ci LIKE ?)
             AND u.city = ?
             AND p.expiration_date >= CURDATE() 
             ORDER BY 

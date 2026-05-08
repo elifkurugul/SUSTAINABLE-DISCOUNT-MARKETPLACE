@@ -61,19 +61,15 @@ CREATE TABLE IF NOT EXISTS `shopping_cart` (
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 
-
--- INSERT STATEMENTS
--- generic password: 123456
-
 -- INSERT STATEMENTS
 -- generic password: 123456
 
 INSERT INTO `users` (`id`, `email`, `name`, `password`, `city`, `district`, `type`) VALUES
-(1, 'market1@gmail.com', 'Tok Market', '$2b$10$vK.mKFu/Ct9Co4qfrXpydeh/KJh4RPLEczwmkQek6SlmXgU1QhFoG', 'Ankara', 'Bilkent', 'market'),
-(2, 'market2@gmail.com', 'Fresh & Save', '$2b$10$l.Hjnb.M4vg57icp0sUEKOFX767Qad/oEAOOhf0aL4J20uvdHc1F6', 'Ankara', 'Çankaya', 'market'),
-(3, 'market3@market.com', 'Bosphorus Groceries', '$2b$10$VvOM.0UiglNznu/w75G6pOsUXISmHpmKEfLFsyjy.7lyT9qw6yLP6', 'İstanbul', 'Kadıköy', 'market'),
-(4, 'consumer1@bilkent.edu.tr', 'Cüneyt Sevgi', '$2b$10$585OgIV6sSWUUNyeSKP/FO9y7cAioq2klt15NMnRQThBHpE5G0mvq', 'Ankara', 'Bilkent', 'consumer'),
-(5, 'consumer2@gmail.com', 'Serkan Genç', '$2b$10$I13.10bPQXLoBHE./mwHK.bitWylIdmH25tA1XGq4TxP9tbKBLcfS', 'Ordu', 'Altınordu', 'consumer');
+(1, 'market1@gmail.com', 'Anatolia Artisans', '$2b$10$vK.mKFu/Ct9Co4qfrXpydeh/KJh4RPLEczwmkQek6SlmXgU1QhFoG', 'İstanbul', 'Kadıköy', 'market'),
+(2, 'market2@gmail.com', 'Fresh Find', '$2b$10$l.Hjnb.M4vg57icp0sUEKOFX767Qad/oEAOOhf0aL4J20uvdHc1F6', 'İstanbul', 'Beşiktaş', 'market'),
+(3, 'market3@gmail.com', 'Best of Konyaaltı', '$2b$10$VvOM.0UiglNznu/w75G6pOsUXISmHpmKEfLFsyjy.7lyT9qw6yLP6', 'Antalya', 'Konyaaltı', 'market'),
+(4, 'consumer1@bilkent.edu.tr', 'Zeynep Elif Söğüt', '$2b$10$585OgIV6sSWUUNyeSKP/FO9y7cAioq2klt15NMnRQThBHpE5G0mvq', 'İstanbul', 'Kadıköy', 'consumer'),
+(5, 'consumer2@gmail.com', 'Dilek Manav', '$2b$10$I13.10bPQXLoBHE./mwHK.bitWylIdmH25tA1XGq4TxP9tbKBLcfS', 'Antalya', 'Manavgat', 'consumer');
 
 INSERT INTO products
 (id, market_id, title, stock, normal_price, discounted_price, expiration_date, image)
@@ -97,4 +93,10 @@ VALUES
 (17, 1, 'Kinder Bueno', 40, 45.00, 25.00, '2026-05-22', 'kinder-bueno.jpeg'),
 (18, 1, 'Milka Lila Pause', 35, 35.00, 20.00, '2026-05-07', 'lila-pause.jpeg'),
 (19, 1, 'Kahve Dünyası Gofrik', 50, 20.00, 10.00, '2026-05-16', 'gofrik.jpeg'),
-(20, 1, 'Cafe Latte', 10, 110.00, 60.00, '2026-05-09', 'cafe-latte.jpeg');
+(20, 1, 'Coffee Latte', 10, 110.00, 60.00, '2026-05-09', 'cafe-latte.jpeg'),
+(21, 3, 'Croissant', 8, 100.00, 30.00, '2026-04-09', 'croissant.jpeg'),
+(22, 2, 'Strawberry Jam', 10, 300.00, 225.00, '2027-10-05', 'strawberry-jam.jpeg'),
+(23, 1, 'Peach Jam', 10, 200.00, 100.00, '2028-08-09', 'peach-jam.jpeg'),
+(24, 2, 'Cherry Jam', 10, 250.00, 105.00, '2025-07-08', 'cherry-jam.jpeg'),
+(25, 3, 'Lemon Cake', 10, 120.00, 70.00, '2026-08-12', 'lemon-cake.jpeg'),
+(26, 3, 'Lemonade', 48, 50.00, 30.00, '2026-07-09', 'lemonade.jpeg');

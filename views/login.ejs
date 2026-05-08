@@ -12,7 +12,7 @@
 
 
   <div>
-    <!-- Hata Mesajı  -->
+    <!-- error  -->
     <h1>Log in Page</h1>
     <% if (message) { %>
       <div style="color: red; margin-bottom: 10px;">
@@ -22,11 +22,9 @@
 
         <form action="/login" method="POST">
           <div>
-            <!--Email -->
             <label for="email">E-Mail Address</label>
             <input type="email" name="email" id="email" value="<%= oldEmail %>">
           </div>
-          <!-- Şifre-->
           <div>
             <label for="password">Password:</label>
             <input type="password" name="password" id="password">

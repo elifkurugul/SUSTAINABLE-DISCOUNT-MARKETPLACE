@@ -13,7 +13,7 @@
             <div id="items-list">
                 <% items.forEach(i => { %>
                     <div id="item-row-<%= i.id %>">
-                        <p>Title: <%= i.title %></p>
+                        <p><%= i.title %></p>
                         <p>Price: ₺<%= i.discounted_price %></p>
                         
                         <label>Quantity:</label>
@@ -37,7 +37,7 @@
             <p>Your cart is empty.</p>
         <% } %>
     </div>
-    <div>
+    <div style="text-align: center; margin-top: 20px;">
         <a href="<%= typeof returnTo !== 'undefined' ? returnTo : '/search' %>" class="back-btn">
             Back to Shopping! 
         </a>
@@ -70,24 +70,38 @@
         document.querySelectorAll('.remove-btn').forEach(btn => {
             btn.addEventListener('click', async function () {
                 const cartId = this.dataset.cartId
+                console.log("Removing cart item with id:", cartId) // <- add this
 
-                const response = await fetch(`/api/cart/remove/${cartId}`, {
-                    method: 'DELETE'
-                })
-                const data = await response.json()
+                try {
+                    const response = await fetch(`/api/cart/remove/${cartId}`, {
+                        method: 'DELETE'
+                    })
+                    console.log("Response status:", response.status) // <- and this
 
-                if (data.success) {
-                    document.getElementById(`item-row-${cartId}`).remove()
-                    document.getElementById('grand-total').innerText = `Total: ₺${data.total}`
-
-                    if (parseFloat(data.total) <= 0) {
-                        document.getElementById('cart-container').innerHTML = "<p>Your cart is empty.</p>"
+                    if (response.status === 401) {
+                        alert("Session expired. Please log in again.")
+                        window.location.href = '/login'
+                        return
                     }
-                } else {
-                    alert("Error removing item.")
+
+                    const data = await response.json()
+                    console.log("Response data:", data) // <- and this
+
+                    if (data.success) {
+                        document.getElementById(`item-row-${cartId}`).remove()
+                        document.getElementById('grand-total').innerText = `Total: ₺${data.total}`
+
+                        if (parseFloat(data.total) <= 0) {
+                            document.getElementById('cart-container').innerHTML = "<p>Your cart is empty.</p>"
+                        }
+                    } else {
+                        alert("Error removing item.")
+                    }
+                } catch (err) {
+                    console.error("Remove failed with error:", err) // <- catches JSON parse errors etc
                 }
-            })
-        })
+    })
+})
 
         // purchase item
         const purchaseBtn = document.getElementById('purchase-btn')
@@ -100,7 +114,7 @@
                     alert("Purchase successful! Products have been removed.")
                     document.getElementById('cart-container').innerHTML = "<p>Your cart is empty.</p>"
                 } else {
-                    alert("Error processing purchase.")
+                    alert("You have exceeded the product stock!")
                 }
             })
         }

@@ -11,15 +11,40 @@
         <div class="alert"><%= message %></div>
     <% } %>
 
-    <div class="hero">
-        <div class="logo-box">
-            <span class="logo-text">
-                <span class="d">D</span>i<span class="z">Z</span><span class="e">E</span>l Market
-            </span>
+    <div class="left">
+        <div class="hero">
+            <div class="logo-box">
+                <span class="logo-text">
+                    <span class="d">D</span>i<span class="z">Z</span><span class="e">E</span>l Market
+                </span>
+            </div>
+            <div class="auth-buttons">
+                <a href="/login" class="btn-login">Login</a>
+                <a href="/register" class="btn-register">Register</a>
+            </div>
         </div>
-        <div class="auth-buttons">
-            <a href="/login" class="btn-login">Login</a>
-            <a href="/register" class="btn-register">Register</a>
+    
+        <div class="pic">
+            <img src="/images/market.jpeg" alt="">
+        </div>
+    </div>
+    <div class="right">
+        <h2 class="welcome-title">Explore Current Deals</h2>
+        <div class="product-grid">
+            <% if (typeof products !== 'undefined' && products.length > 0) { %>
+                <% products.forEach( p => { %>
+                    <div class="product-card">
+                        <img src="/images/<%= p.image %>" alt="<%= p.title %>">
+                        <h3><%= p.title %></h3>
+                        <p class="price-tag">
+                            <span class="old-price">₺<%= p.normal_price %></span>
+                            <span class="new-price">₺<%= p.discounted_price %></span>
+                        </p>
+                    </div>
+                <% }) %>
+            <% } else { %>
+                <p style="color: #a07080;">No products currently available. Check back soon!</p>
+            <% } %>
         </div>
     </div>
 </body>
