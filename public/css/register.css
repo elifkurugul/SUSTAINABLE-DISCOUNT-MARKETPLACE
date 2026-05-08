@@ -1,23 +1,14 @@
-/* register.css — register.ejs */
-:root {
-  --pink-lightest: #fff0f5;
-  --pink-main:     #f78fb3;
-  --pink-deep:     #d63384;
-  --bg:            #fff7f9;
-  --surface:       #ffffff;
-  --text:          #5c3347;
-  --text-muted:    #a07080;
-  --border:        #f0c0d0;
-  --radius:        12px;
-  --shadow:        0 2px 12px rgba(215,100,140,0.10);
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
 body {
-  background: var(--bg);
+  background: #fff7f9;
   font-family: 'Segoe UI', sans-serif;
-  color: var(--text);
+  color: #5c3347;
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -26,18 +17,18 @@ body {
 }
 
 .register-container {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+  background: #ffffff;
+  border: 1px solid #f0c0d0;
+  border-radius: 12px;
   padding: 2rem;
   width: 100%;
   max-width: 460px;
-  box-shadow: var(--shadow);
+  box-shadow: 0 2px 12px rgba(215,100,140,0.10);
 }
 
 .register-container h2 {
   text-align: center;
-  color: var(--pink-deep);
+  color: #d63384;
   font-size: 1.4rem;
   margin-bottom: 1.25rem;
 }
@@ -52,13 +43,15 @@ body {
   margin-bottom: 1rem;
 }
 
-.form-group { margin-bottom: 0.8rem; }
+.form-group {
+  margin-bottom: 0.8rem;
+}
 
 label {
   display: block;
   font-size: 0.83rem;
   font-weight: 600;
-  color: var(--text-muted);
+  color: #a07080;
   margin-bottom: 4px;
 }
 
@@ -68,25 +61,29 @@ input[type="password"],
 select {
   width: 100%;
   padding: 0.5rem 0.8rem;
-  border: 1px solid var(--border);
+  border: 1px solid #f0c0d0;
   border-radius: 8px;
-  background: var(--pink-lightest);
-  color: var(--text);
+  background: #fff0f5;
+  color: #5c3347;
   font-size: 0.92rem;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-input:focus, select:focus {
+input:focus,
+select:focus {
   outline: none;
-  border-color: var(--pink-main);
+  border-color: #f78fb3;
   box-shadow: 0 0 0 3px rgba(247,143,179,0.18);
 }
 
-select { appearance: none; cursor: pointer; }
+select {
+  appearance: none;
+  cursor: pointer;
+}
 
 .btn-register {
   width: 100%;
-  background: var(--pink-main);
+  background: #f78fb3;
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -97,12 +94,19 @@ select { appearance: none; cursor: pointer; }
   margin-top: 0.5rem;
   transition: background 0.2s;
 }
-.btn-register:hover { background: var(--pink-deep); }
+
+.btn-register:hover {
+  background: #d63384;
+}
 
 .register-container > p {
   text-align: center;
   font-size: 0.88rem;
-  color: var(--text-muted);
+  color: #a07080;
   margin-top: 1rem;
 }
-.register-container > p a { color: var(--pink-deep); font-weight: 600; }
+
+.register-container > p a {
+  color: #d63384;
+  font-weight: 600;
+}

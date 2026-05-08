@@ -117,11 +117,20 @@ app.get("/login", (req, res) => {
     if (req.session.isAuthenticated) {
         return res.redirect("/auth")
     }
+
     const message = req.session.message
     const oldEmail = req.session.oldEmail || ""
+    const oldRemember = req.session.oldRemember || false
+
     req.session.message = null
     req.session.oldEmail = null
-    res.render("login", { message, oldEmail })
+    req.session.oldRemember = null
+
+    res.render("login", {
+        message,
+        oldEmail,
+        oldRemember
+    })
 })
 
 app.post("/login", async (req, res) => {
@@ -131,6 +140,7 @@ app.post("/login", async (req, res) => {
     if (!email || !password) {
         req.session.message = "Please fill in all fields.";
         req.session.oldEmail = email;
+        req.session.oldRemember = remember;
         return res.redirect("/login");
     }
     try {
@@ -314,7 +324,7 @@ app.post("/market/edit-product/:id", requireAuth, upload.single("image"), async 
     const productId = req.params.id;
     const marketId = req.session.user.id;
     const { title, stock, normal_price, discounted_price, expiration_date } = req.body;
-    
+
     try {
         if (req.file) {
             // user uploads new image
