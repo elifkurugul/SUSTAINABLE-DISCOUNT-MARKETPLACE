@@ -36,7 +36,11 @@
         <% } else { %>
             <p>Your cart is empty.</p>
         <% } %>
-        <a href="/search">Back to Shopping!</a>
+    </div>
+    <div>
+        <a href="<%= typeof returnTo !== 'undefined' ? returnTo : '/search' %>" class="back-btn">
+            Back to Shopping! 
+        </a>
     </div>
 
     <!-- AJAX SCRIPTS -->

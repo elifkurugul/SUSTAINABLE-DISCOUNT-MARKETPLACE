@@ -6,6 +6,20 @@ import session from "express-session"
 import cartRouter from "./routes/cart.js"
 import { sendVerificationEmail } from "./routes/mail.js"
 import { body, validationResult } from "express-validator"
+import multer from "multer"
+import path from "path"
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, "public/images/")
+    },
+    filename: (req, file, cb) => {
+        const ext = path.extname(file.originalname)
+        const name = path.basename(file.originalname, ext)
+        cb(null, `${Date.now()}-${name}${ext}`)
+    }
+})
+const upload = multer({ storage })
 
 const port = process.env.PORT
 const app = express()
@@ -250,19 +264,30 @@ app.post("/market/update-profile", requireAuth, async (req, res) => {
     }
 });
 
-app.post("/market/add-product", requireAuth, async (req, res) => {
-    const { title, stock, normal_price, discounted_price, expiration_date, image } = req.body;
+app.post("/market/add-product", requireAuth, upload.single("image"), async (req, res) => {
+    const { title, stock, normal_price, discounted_price, expiration_date } = req.body;
     const market_id = req.session.user.id;
+
+    if (!req.file) {
+        return res.status(400).send("Please upload an image for the product.")
+    }
+    const ext = path.extname(req.file.originalname).toLowerCase()
+    if (![".jpg", ".jpeg", ".png", ".gif"].includes(ext)) {
+        return res.status(400).send("Invalid file type. Only JPG, JPEG, PNG, and GIF are allowed.")
+    }
+
+    const image = req.file.filename;
+
     try {
         await db.query(
             "INSERT INTO products (market_id, title, stock, normal_price, discounted_price, expiration_date, image) VALUES (?, ?, ?, ?, ?, ?, ?)",
             [market_id, title, stock, normal_price, discounted_price, expiration_date, image]
         );
-        res.redirect("/auth");
+        res.redirect("/auth")
     } catch (err) {
-        res.status(500).send("Error adding product.");
+        res.status(500).send("Error adding product to database.")
     }
-});
+})
 
 
 app.post("/market/delete-product/:id", requireAuth, async (req, res) => {

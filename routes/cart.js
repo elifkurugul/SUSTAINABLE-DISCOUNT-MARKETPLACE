@@ -56,7 +56,9 @@ router.get("/", requireAuth, async (req, res) => {
             totalPrice += (i.discounted_price * i.quantity)
         })
 
-        res.render("shopping-cart", { items: cartItems, totalPrice, user: req.session.user })
+        res.render("shopping-cart", { items: cartItems, totalPrice, user: req.session.user,
+            returnTo: req.session.returnTo || "/search"
+        })
     } catch (err) {
         res.status(500).send("Error loading shopping cart.")
     }
